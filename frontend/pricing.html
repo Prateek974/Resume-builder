@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pricing</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background: radial-gradient(circle at top, #0b1c2d, #02060c 60%);
+    color: #ffffff;
+}
+
+.pricing-section {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.pricing-section h1 {
+    font-size: 42px;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.pricing-section p {
+    color: #9fb8d1;
+    margin-bottom: 60px;
+    font-size: 16px;
+}
+
+
+.pricing-container {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    flex-wrap: wrap;
+}
+
+
+.pricing-card {
+    width: 320px;
+    background: linear-gradient(145deg, #050d18, #02070f);
+    border-radius: 16px;
+    padding: 35px 30px;
+    position: relative;
+    box-shadow: 0 0 0 rgba(0, 153, 255, 0.0);
+    transition: all 0.4s ease;
+    border: 1px solid rgba(0, 153, 255, 0.15);
+}
+
+
+.pricing-card:hover {
+    transform: translateY(-15px) scale(1.04);
+    box-shadow: 0 0 30px rgba(0, 153, 255, 0.45);
+    border: 1px solid rgba(0, 153, 255, 0.6);
+}
+
+
+.plan-name {
+    font-size: 24px;
+    margin-bottom: 10px;
+    color: #ffffff;
+}
+
+.price {
+    font-size: 38px;
+    font-weight: bold;
+    color: #2da8ff;
+    margin: 20px 0;
+}
+
+.price span {
+    font-size: 14px;
+    color: #9fb8d1;
+}
+
+.features {
+    list-style: none;
+    padding: 0;
+    margin: 30px 0;
+    text-align: left;
+}
+
+.features li {
+    margin-bottom: 14px;
+    color: #cfdff0;
+    position: relative;
+    padding-left: 22px;
+}
+
+.features li::before {
+    content: "✔";
+    position: absolute;
+    left: 0;
+    color: #2da8ff;
+    font-size: 14px;
+}
+
+
+.btn {
+    display: inline-block;
+    width: 100%;
+    padding: 14px 0;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    background: linear-gradient(135deg, #007bff, #00c6ff);
+    color: #ffffff;
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    background: linear-gradient(135deg, #00c6ff, #007bff);
+    box-shadow: 0 0 15px rgba(0, 198, 255, 0.8);
+}
+
+
+.featured {
+    background: linear-gradient(145deg, #061a2f, #020a14);
+    border: 1px solid rgba(0, 198, 255, 0.7);
+}
+
+.featured::before {
+    content: "MOST POPULAR";
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #00c6ff;
+    color: #00111f;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: bold;
+    border-radius: 20px;
+}
+
+
+@media (max-width: 1000px) {
+    .pricing-container {
+        flex-direction: column;
+        align-items: center;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<section class="pricing-section">
+    <h1>Pricing Plans</h1>
+    <p>Powerful solutions designed for every stage of your growth</p>
+
+    <div class="pricing-container">
+
+        
+        <div class="pricing-card">
+            <div class="plan-name">Free</div>
+            <div class="price">₹0 <span>/ year</span></div>
+            <ul class="features">
+                <li>Basic Platform Access</li>
+                <li>Limited Usage & Tools</li>
+                <li>Community Support</li>
+                <li>Standard Security</li>
+            </ul>
+            <a href="#" class="btn">Get Started</a>
+        </div>
+
+        <div class="pricing-card featured">
+            <div class="plan-name">Advanced</div>
+            <div class="price">₹1500 <span>/ year</span></div>
+            <ul class="features">
+                <li>All Free Features Included</li>
+                <li>Advanced Analytics & Tools</li>
+                <li>Priority Email Support</li>
+                <li>Enhanced Security & Backups</li>
+            </ul>
+            <a href="#" class="btn">Buy Now</a>
+        </div>
+
+        <div class="pricing-card">
+            <div class="plan-name">Pro</div>
+            <div class="price">₹3200 <span>/ year</span></div>
+            <ul class="features">
+                <li>All Advanced Features</li>
+                <li>Unlimited Access & Usage</li>
+                <li>24/7 Premium Support</li>
+                <li>Enterprise-Grade Security</li>
+            </ul>
+            <a href="#" class="btn">Buy Now</a>
+        </div>
+
+    </div>
+</section>
+
+</body>
+</html>
