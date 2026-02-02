@@ -4,8 +4,13 @@ export default {
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
-  theme: {
-    extend: {},
+ theme: {
+    extend: {
+      fontFamily: {
+        // This makes 'font-sans' use Inter by default
+        sans: ['Inter', 'ui-sans-serif', 'system-ui'],
+      },
+    },
   },
   plugins: [],
 }

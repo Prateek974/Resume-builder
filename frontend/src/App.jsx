@@ -8,11 +8,11 @@ function App(){
     <Navbar />
 
 
-    <ContactPage/>
+    
 
 
 
-    <Footer />
+    
     </>
     
   );
