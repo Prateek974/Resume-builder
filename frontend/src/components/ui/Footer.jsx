@@ -92,7 +92,7 @@ const Footer = () => {
         <span className="text-xs font-bold uppercase tracking-widest">Facebook</span>
     </a>
 
-    {/* X SVG */}
+    
     <a href="#" className="flex items-center gap-2 text-zinc-500 hover:text-[#009245] transition-colors group">
         <svg className="w-4 h-4 fill-current" viewBox="0 0 24 24">
             <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932L18.901 1.153zM17.61 20.644h2.039L6.486 3.24H4.298L17.61 20.644z"/>
@@ -100,7 +100,7 @@ const Footer = () => {
         <span className="text-xs font-bold uppercase tracking-widest">X</span>
     </a>
 
-    {/* LinkedIn SVG */}
+    
     <a href="#" className="flex items-center gap-2 text-zinc-500 hover:text-[#009245] transition-colors group">
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M22.23 0H1.77C.8 0 0 .77 0 1.72v20.56C0 23.23.8 24 1.77 24h20.46c.98 0 1.77-.77 1.77-1.72V1.72C24 .77 23.2 0 22.23 0zM7.12 20.45H3.56V9h3.56v11.45zM5.34 7.43c-1.14 0-2.06-.92-2.06-2.06 0-1.14.92-2.06 2.06-2.06 1.14 0 2.06.92 2.06 2.06 0 1.14-.92 2.06-2.06 2.06zM20.45 20.45h-3.56v-5.6c0-1.34-.03-3.06-1.87-3.06-1.87 0-2.15 1.46-2.15 2.96v5.7h-3.56V9h3.42v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.45v6.29z"/>
