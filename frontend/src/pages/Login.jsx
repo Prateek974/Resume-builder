@@ -1,100 +1,121 @@
-import React,{useState} from "react";
+import React, { useState } from 'react';
 
 const Login = () => {
-    const[formData,setFormData] = useState({
-        fullName:'',
-        email:'',
-        password:'',
-        confirmPassword:''    
-    });
-    const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+  const [showPassword, setShowPassword] = useState(false);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you will call your backend API: http://localhost:5000/api/auth/register
-    console.log("Form Data Submitted:", formData);
-  };
-    return (
-        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-10 rounded-xl shadow-md">
-        <div>
-          <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
-            Create your account
-          </h2>
-          <p className="mt-2 text-center text-sm text-gray-600">
-            Start building your AI-powered resume today.
-          </p>
+  return (
+    <div className="min-h-[calc(100vh-56px)] bg-zinc-50 flex items-center justify-center p-4 font-sans text-zinc-800">
+      {/* min-h-[calc(100vh-56px)] ensures full height minus the navbar height (14 * 4px = 56px) 
+         if you place this directly below your Navbar component.
+      */}
+      
+      <div className="w-full max-w-[400px] bg-white border border-zinc-200 shadow-sm p-8 relative overflow-hidden">
+        
+        {/* Decorative Green Top Border (Matches Navbar Underline) */}
+        <div className="absolute top-0 left-0 w-full h-1 bg-[#009245]"></div>
+
+        {/* Header Section */}
+        <div className="mb-8 text-center">
+            <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#009245]/10 mb-4">
+                <span className="material-symbols-outlined text-[#009245] text-2xl">
+                    lock
+                </span>
+            </div>
+            <h2 className="text-2xl font-bold text-zinc-900 tracking-tight">Welcome Back</h2>
+            <p className="text-zinc-500 text-sm mt-2">Sign in to continue building</p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm space-y-4">
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Full Name</label>
-              <input
-                name="fullName"
-                type="text"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="John Doe"
-                onChange={handleChange}
-              />
+
+        <form className="space-y-5" noValidate>
+          
+          {/* Email Input */}
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                Email
+            </label>
+            <input 
+              type="email" 
+              id="email" 
+              className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
+              placeholder="name@example.com"
+              required 
+            />
+          </div>
+
+          {/* Password Input */}
+          <div className="space-y-1.5">
+             <div className="flex justify-between items-center">
+                <label htmlFor="password" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
+                    Password
+                </label>
             </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Email address</label>
-              <input
-                name="email"
-                type="email"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="john@example.com"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Password</label>
-              <input
-                name="password"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+            
+            <div className="relative">
+                <input 
+                type={showPassword ? "text" : "password"} 
+                id="password" 
+                className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
                 placeholder="••••••••"
-                onChange={handleChange}
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700">Confirm Password</label>
-              <input
-                name="confirmPassword"
-                type="password"
-                required
-                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
-                placeholder="••••••••"
-                onChange={handleChange}
-              />
+                required 
+                />
+                <button 
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-zinc-600"
+                >
+                <span className="material-symbols-outlined text-[18px]">
+                    {showPassword ? 'visibility_off' : 'visibility'}
+                </span>
+                </button>
             </div>
           </div>
 
-          <div>
-            <button
-              type="submit"
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          {/* Remember & Forgot Row */}
+          <div className="flex items-center justify-between text-sm">
+             <label className="flex items-center gap-2 cursor-pointer group">
+                <input type="checkbox" className="w-4 h-4 rounded border-zinc-300 text-[#009245] focus:ring-[#009245] cursor-pointer accent-[#009245]" />
+                <span className="text-zinc-600 group-hover:text-zinc-900 transition-colors">Remember me</span>
+             </label>
+             <a href="#" className="font-medium text-[#009245] hover:text-[#006837] hover:underline transition-all">
+                Forgot password?
+             </a>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="pt-2 space-y-3">
+            <button 
+                type="submit" 
+                className="w-full bg-[#009245] hover:bg-[#006837] text-white font-semibold py-2.5 text-sm transition-all shadow-sm active:scale-[0.98]"
             >
-              Sign Up
+                Sign In
+            </button>
+            
+            {/* Divider */}
+            <div className="relative flex py-1 items-center">
+                <div className="flex-grow border-t border-zinc-200"></div>
+                <span className="flex-shrink mx-4 text-xs text-zinc-400 font-medium">OR</span>
+                <div className="flex-grow border-t border-zinc-200"></div>
+            </div>
+
+            {/* Google Button (Neutral Style) */}
+            <button 
+                type="button" 
+                className="w-full bg-white border border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 font-medium py-2.5 text-sm transition-all flex items-center justify-center gap-2"
+            >
+                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
+                Continue with Google
             </button>
           </div>
+
         </form>
-        <div className="text-center">
-          <p className="text-sm text-gray-600">
-            Already have an account? <a href="/login" className="font-medium text-blue-600 hover:text-blue-500">Log in</a>
+
+        <div className="mt-8 text-center">
+          <p className="text-sm text-zinc-500">
+            Don't have an account? <a href="#" className="font-semibold text-[#004d26] hover:underline">Start Now</a>
           </p>
         </div>
       </div>
     </div>
-        
-     
-
-
-    );
+  );
 };
+
 export default Login;

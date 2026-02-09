@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 
 const Navbar = () => {
     return (
@@ -12,7 +13,7 @@ const Navbar = () => {
                         <span className="material-symbols-outlined text-zinc-900 text-2xl">
                             description
                         </span>
-                        {/* AI Sparkle now in Brand Green */}
+                
                         <span className="material-symbols-outlined text-[#009245] text-[12px] absolute -top-1 -right-1 animate-pulse">
                             auto_awesome
                         </span>
@@ -35,13 +36,13 @@ const Navbar = () => {
                 {/* 3. LOGIN/SIGNUP SECTION - High Contrast Green Theme */}
                 <div className="flex items-center gap-2">
                      {/* Login: Using a Darker Forest Green for contrast */}
-                     <button className="bg-[#004d26] text-white px-3 py-1.5 text-[13px] font-semibold hover:bg-zinc-800  transition-all shadow-sm active:scale-95">
+                     <Link to="/login" className="bg-[#004d26] text-white px-3 py-1.5 text-[13px] font-semibold hover:bg-zinc-800  transition-all shadow-sm active:scale-95">
                         Login
-                    </button>
+                    </Link>
                     {/* Start Now: Using the Vibrant Brand Green */}
-                    <button className="bg-[#009245] text-white px-3 py-1.5 text-[13px] font-semibold hover:bg-[#006837]  transition-all shadow-sm active:scale-95">
+                    <Link to="/register" className="bg-[#009245] text-white px-3 py-1.5 text-[13px] font-semibold hover:bg-[#006837]  transition-all shadow-sm active:scale-95">
                         Start Now
-                    </button>
+                    </Link>
                 </div>
 
             </div>
