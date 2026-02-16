@@ -1,17 +1,50 @@
 import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom'; 
+import axios from 'axios'; 
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); // Hook for redirection
+
+  // 1. State for Login Data
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+  // 3. Handle Login Submission
+  const handleLogin = async (e) => {
+    e.preventDefault(); // Stop page reload
+    try {
+      const response = await axios.post('http://localhost:5000/api/auth/login', {
+        email: formData.email,
+        password: formData.password
+      });
+
+      console.log("Login Success:", response.data);
+
+      // Save token to LocalStorage
+      localStorage.setItem('userInfo', JSON.stringify(response.data));
+
+      alert("Welcome back!");
+      navigate('/'); // Redirect to Home/Dashboard
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Invalid Email or Password");
+    }
+  };
 
   return (
     <div className="min-h-[calc(100vh-56px)] bg-zinc-50 flex items-center justify-center p-4 font-sans text-zinc-800">
-      {/* min-h-[calc(100vh-56px)] ensures full height minus the navbar height (14 * 4px = 56px) 
-         if you place this directly below your Navbar component.
-      */}
       
       <div className="w-full max-w-[400px] bg-white border border-zinc-200 shadow-sm p-8 relative overflow-hidden">
         
-        {/* Decorative Green Top Border (Matches Navbar Underline) */}
+        {/* Decorative Green Top Border */}
         <div className="absolute top-0 left-0 w-full h-1 bg-[#009245]"></div>
 
         {/* Header Section */}
@@ -25,7 +58,8 @@ const Login = () => {
             <p className="text-zinc-500 text-sm mt-2">Sign in to continue building</p>
         </div>
 
-        <form className="space-y-5" noValidate>
+        {/* 4. Connected Form */}
+        <form className="space-y-5" onSubmit={handleLogin} noValidate>
           
           {/* Email Input */}
           <div className="space-y-1.5">
@@ -35,6 +69,8 @@ const Login = () => {
             <input 
               type="email" 
               id="email" 
+              value={formData.email} // Connected to state
+              onChange={handleChange}   // Updates state
               className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
               placeholder="name@example.com"
               required 
@@ -53,6 +89,8 @@ const Login = () => {
                 <input 
                 type={showPassword ? "text" : "password"} 
                 id="password" 
+                value={formData.password} // Connected to state
+                onChange={handleChange}   // Updates state
                 className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
                 placeholder="••••••••"
                 required 
@@ -89,14 +127,12 @@ const Login = () => {
                 Sign In
             </button>
             
-            {/* Divider */}
             <div className="relative flex py-1 items-center">
                 <div className="flex-grow border-t border-zinc-200"></div>
                 <span className="flex-shrink mx-4 text-xs text-zinc-400 font-medium">OR</span>
                 <div className="flex-grow border-t border-zinc-200"></div>
             </div>
 
-            {/* Google Button (Neutral Style) */}
             <button 
                 type="button" 
                 className="w-full bg-white border border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 font-medium py-2.5 text-sm transition-all flex items-center justify-center gap-2"
@@ -110,7 +146,7 @@ const Login = () => {
 
         <div className="mt-8 text-center">
           <p className="text-sm text-zinc-500">
-            Don't have an account? <a href="#" className="font-semibold text-[#004d26] hover:underline">Start Now</a>
+            Don't have an account? <Link to="/register" className="font-semibold text-[#004d26] hover:underline">Start Now</Link>
           </p>
         </div>
       </div>
