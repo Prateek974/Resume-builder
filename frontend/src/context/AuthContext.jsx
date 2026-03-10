@@ -1,9 +1,9 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 
-// 1. Create the Context
+
 const AuthContext = createContext();
 
-// 2. Create the Provider Component
+
 export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -33,7 +33,7 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-// 3. Create the Custom Hook
+
 export const useAuth = () => {
     return useContext(AuthContext);
 };

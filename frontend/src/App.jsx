@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 
-// 1. Import the AuthProvider
 import { AuthProvider } from './context/AuthContext'; 
 
 import Footer from './components/ui/Footer';
@@ -13,7 +12,7 @@ import Register from './pages/Register';
 
 function App() {
   return (
-    // 2. Wrap the entire application in AuthProvider
+    
     <AuthProvider>
       <BrowserRouter>
         

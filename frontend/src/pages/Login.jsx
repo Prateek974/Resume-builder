@@ -4,9 +4,9 @@ import axios from 'axios';
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate(); // Hook for redirection
+  const navigate = useNavigate(); 
 
-  // 1. State for Login Data
+  
   const [formData, setFormData] = useState({
     email: '',
     password: ''
@@ -17,9 +17,9 @@ const Login = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
-  // 3. Handle Login Submission
+  
   const handleLogin = async (e) => {
-    e.preventDefault(); // Stop page reload
+    e.preventDefault(); 
     try {
       const response = await axios.post('http://localhost:5000/api/auth/login', {
         email: formData.email,
@@ -28,11 +28,11 @@ const Login = () => {
 
       console.log("Login Success:", response.data);
 
-      // Save token to LocalStorage
+      
       localStorage.setItem('userInfo', JSON.stringify(response.data));
 
       alert("Welcome back!");
-      navigate('/'); // Redirect to Home/Dashboard
+      navigate('/'); 
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Invalid Email or Password");
@@ -44,10 +44,9 @@ const Login = () => {
       
       <div className="w-full max-w-[400px] bg-white border border-zinc-200 shadow-sm p-8 relative overflow-hidden">
         
-        {/* Decorative Green Top Border */}
         <div className="absolute top-0 left-0 w-full h-1 bg-[#009245]"></div>
 
-        {/* Header Section */}
+     
         <div className="mb-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#009245]/10 mb-4">
                 <span className="material-symbols-outlined text-[#009245] text-2xl">
@@ -58,10 +57,10 @@ const Login = () => {
             <p className="text-zinc-500 text-sm mt-2">Sign in to continue building</p>
         </div>
 
-        {/* 4. Connected Form */}
+      
         <form className="space-y-5" onSubmit={handleLogin} noValidate>
           
-          {/* Email Input */}
+       
           <div className="space-y-1.5">
             <label htmlFor="email" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                 Email
@@ -69,15 +68,15 @@ const Login = () => {
             <input 
               type="email" 
               id="email" 
-              value={formData.email} // Connected to state
-              onChange={handleChange}   // Updates state
+              value={formData.email} 
+              onChange={handleChange}   
               className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
               placeholder="name@example.com"
               required 
             />
           </div>
 
-          {/* Password Input */}
+         
           <div className="space-y-1.5">
              <div className="flex justify-between items-center">
                 <label htmlFor="password" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
@@ -89,8 +88,8 @@ const Login = () => {
                 <input 
                 type={showPassword ? "text" : "password"} 
                 id="password" 
-                value={formData.password} // Connected to state
-                onChange={handleChange}   // Updates state
+                value={formData.password} 
+                onChange={handleChange}  
                 className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
                 placeholder="••••••••"
                 required 
@@ -107,7 +106,7 @@ const Login = () => {
             </div>
           </div>
 
-          {/* Remember & Forgot Row */}
+    
           <div className="flex items-center justify-between text-sm">
              <label className="flex items-center gap-2 cursor-pointer group">
                 <input type="checkbox" className="w-4 h-4 rounded border-zinc-300 text-[#009245] focus:ring-[#009245] cursor-pointer accent-[#009245]" />
@@ -118,7 +117,7 @@ const Login = () => {
              </a>
           </div>
 
-          {/* Action Buttons */}
+          
           <div className="pt-2 space-y-3">
             <button 
                 type="submit" 
