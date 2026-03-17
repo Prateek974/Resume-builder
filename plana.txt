@@ -1,0 +1,47 @@
+
+
+### Phase 1: The Core Infrastructure (DONE ✅)
+
+* [x] **Project Setup:** Vite + Express + MongoDB connection.
+* [x] **Authentication:** JWT, `bcryptjs`, and Context API for global state.
+* [x] **Private Routes:** Secure the Dashboard from unlogged users.
+* [x] **Smart Navbar:** Reactive UI that changes based on Login status.
+
+---
+
+### Phase 2: The "Resume Engine" (NEXT UP 🚀)
+
+* [ ] **Mongoose Schema:** Design a complex model to store personal info, education, experience, and skills.
+* [ ] **Dynamic Form:** Create a multi-step form (using `useState`) to collect user data.
+* [ ] **Real-time Preview:** A split-screen view where users see their resume change as they type.
+* [ ] **Multiple Templates:** At least 2-3 CSS layouts (Modern, Classic, Minimalist).
+
+---
+
+### Phase 3: The "Smart" (AI) Features 🤖
+
+* [ ] **Gemini Integration:** An "AI Polish" button that rewrite’s a user’s bullet points to sound more professional.
+* [ ] **Skill Suggestion:** Based on the Job Title, suggest keywords the user should add.
+* [ ] **ATS Scorer:** A small logic-based script that checks if the resume has key sections (Contact, Skills, Experience).
+
+---
+
+### Phase 4: Final Polish & Export 📄
+
+* [ ] **PDF Generation:** Use a library like `react-to-print` or `jspdf` to let users download their resume.
+* [ ] **Cloud Storage:** Use **Cloudinary** to let users upload a profile picture for their resume.
+* [ ] **Deployment:** Host the backend on Render/Railway and the frontend on Vercel/Netlify.
+
+---
+
+### 💡 How to use this list efficiently:
+
+Don't look at the whole list. Look at **Phase 2, Item 1**.
+
+Since you asked for a credible plan to stop the "what do I do?" struggle, **here is your exact checklist for tomorrow's Project Block:**
+
+1. Create `server/models/Resume.js`.
+2. Define the `schema` (fields for name, email, phone, and **arrays** for education/experience).
+3. Create a POST route in the backend to save a new resume linked to the `user._id`.
+
+**Would you like me to provide the "Resume Model" code right now so you can tick off that first box tomorrow morning?**

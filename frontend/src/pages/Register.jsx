@@ -1,18 +1,56 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom'; // Import Link for navigation
+import { Link, useNavigate } from 'react-router-dom'; 
+import axios from 'axios'; 
 
 const Register = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate(); 
+
+  
+  const [formData, setFormData] = useState({
+    fullName: '',
+    email: '',
+    password: ''
+  });
+
+  
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.id]: e.target.value });
+  };
+
+
+  const handleRegister = async (e) => {
+    e.preventDefault();
+    try {
+      
+      const response = await axios.post('http://localhost:5000/api/auth/register', {
+        name: formData.fullName, 
+        email: formData.email,
+        password: formData.password
+      });
+
+      console.log("Registration Success:", response.data);
+
+      
+      localStorage.setItem('userInfo', JSON.stringify(response.data));
+
+      alert("Account created successfully!");
+      navigate('/'); 
+    } catch (error) {
+      console.error(error);
+      alert(error.response?.data?.message || "Registration failed. Please try again.");
+    }
+  };
 
   return (
     <div className="min-h-[calc(100vh-56px)] bg-zinc-50 flex items-center justify-center p-4 font-sans text-zinc-800">
       
       <div className="w-full max-w-[400px] bg-white border border-zinc-200 shadow-sm p-8 relative overflow-hidden">
         
-        {/* Decorative Green Top Border */}
+        
         <div className="absolute top-0 left-0 w-full h-1 bg-[#009245]"></div>
 
-        {/* Header Section */}
+       
         <div className="mb-8 text-center">
             <div className="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[#009245]/10 mb-4">
                 <span className="material-symbols-outlined text-[#009245] text-2xl">
@@ -23,9 +61,10 @@ const Register = () => {
             <p className="text-zinc-500 text-sm mt-2">Start building your resume today</p>
         </div>
 
-        <form className="space-y-5" noValidate>
-          
         
+        <form className="space-y-5" onSubmit={handleRegister}>
+          
+          
           <div className="space-y-1.5">
             <label htmlFor="fullName" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                 Full Name
@@ -33,13 +72,15 @@ const Register = () => {
             <input 
               type="text" 
               id="fullName" 
+              value={formData.fullName} 
+              onChange={handleChange}   
               className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
               placeholder="Enter your name"
               required 
             />
           </div>
 
-          {/* Email Input */}
+         
           <div className="space-y-1.5">
             <label htmlFor="email" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                 Email
@@ -47,13 +88,15 @@ const Register = () => {
             <input 
               type="email" 
               id="email" 
+              value={formData.email}
+              onChange={handleChange}
               className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
               placeholder="name@example.com"
               required 
             />
           </div>
 
-          {/* Password Input */}
+     
           <div className="space-y-1.5">
             <label htmlFor="password" className="block text-xs font-semibold text-zinc-600 uppercase tracking-wider">
                 Password
@@ -63,6 +106,8 @@ const Register = () => {
                 <input 
                 type={showPassword ? "text" : "password"} 
                 id="password" 
+                value={formData.password}
+                onChange={handleChange}
                 className="block w-full border border-zinc-300 bg-zinc-50 px-3 py-2.5 text-sm text-zinc-900 focus:outline-none focus:border-[#009245] focus:ring-1 focus:ring-[#009245] transition-all placeholder-zinc-400"
                 placeholder="Create a password"
                 required 
@@ -79,7 +124,7 @@ const Register = () => {
             </div>
           </div>
 
-          {/* Action Buttons */}
+          
           <div className="pt-2 space-y-3">
             <button 
                 type="submit" 
@@ -88,14 +133,12 @@ const Register = () => {
                 Create Account
             </button>
             
-            {/* Divider */}
             <div className="relative flex py-1 items-center">
                 <div className="flex-grow border-t border-zinc-200"></div>
                 <span className="flex-shrink mx-4 text-xs text-zinc-400 font-medium">OR</span>
                 <div className="flex-grow border-t border-zinc-200"></div>
             </div>
 
-            {/* Google Button */}
             <button 
                 type="button" 
                 className="w-full bg-white border border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 font-medium py-2.5 text-sm transition-all flex items-center justify-center gap-2"

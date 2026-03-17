@@ -1,4 +1,4 @@
-// server/models/User.js
+
 const mongoose = require('mongoose');
 
 const userSchema = mongoose.Schema(
@@ -10,7 +10,7 @@ const userSchema = mongoose.Schema(
     email: {
       type: String,
       required: true,
-      unique: true, // No duplicate emails allowed
+      unique: true, 
     },
     password: {
       type: String,
@@ -18,7 +18,7 @@ const userSchema = mongoose.Schema(
     },
   },
   {
-    timestamps: true, // Automatically adds createdAt and updatedAt fields
+    timestamps: true, 
   }
 );
 

@@ -3,10 +3,10 @@ import React from 'react';
 const Footer = () => {
     return (
         <footer className="bg-zinc-100 text-zinc-600 font-sans pt-16 pb-8 px-6 lg:px-20 border-t border-zinc-200">
-            {/* 1. TOP SECTION: 4-Column Grid */}
+            
             <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
                 
-                {/* Column 1: About Company */}
+                
                 <div className="space-y-4">
                     <h3 className="text-zinc-900 font-bold text-lg relative after:absolute after:bottom-[-8px] after:left-0 after:w-8 after:h-[2.5px] after:bg-[#009245]">
                         About Company
@@ -16,7 +16,7 @@ const Footer = () => {
                     </p>
                 </div>
 
-                {/* Column 2: Quick Links */}
+               
                 <div className="space-y-4">
                     <h3 className="text-zinc-900 font-bold text-lg relative after:absolute after:bottom-[-8px] after:left-0 after:w-8 after:h-[2.5px] after:bg-[#009245]">
                         Quick Links
@@ -30,7 +30,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* Column 3: Features */}
+      
                 <div className="space-y-4">
                     <h3 className="text-zinc-900 font-bold text-lg relative after:absolute after:bottom-[-8px] after:left-0 after:w-8 after:h-[2.5px] after:bg-[#009245]">
                         Features
@@ -43,7 +43,7 @@ const Footer = () => {
                     </ul>
                 </div>
 
-                {/* Column 4: Contact Info */}
+               
                 <div className="space-y-4">
                     <h3 className="text-zinc-900 font-bold text-lg relative after:absolute after:bottom-[-8px] after:left-0 after:w-8 after:h-[2.5px] after:bg-[#009245]">
                         Contact Info
@@ -65,7 +65,7 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* 2. MIDDLE SECTION: Newsletter */}
+    
             <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center py-10 border-t border-zinc-200 gap-6">
                 <h2 className="text-xl font-bold tracking-tight text-zinc-900">Subscribe to the latest Newsletters</h2>
                 <div className="flex w-full md:w-auto">
@@ -80,11 +80,11 @@ const Footer = () => {
                 </div>
             </div>
 
-            {/* 3. BOTTOM SECTION: Copyright & Socials */}
+          
             <div className="max-w-7xl mx-auto pt-8 border-t border-zinc-200 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-bold uppercase tracking-widest text-zinc-500">
                 <p>© Copyright 2026. All Rights Reserved</p>
                <div className="flex gap-8 items-center">
-    {/* Facebook SVG */}
+  
     <a href="#" className="flex items-center gap-2 text-zinc-500 hover:text-[#009245] transition-colors group">
         <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
             <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
