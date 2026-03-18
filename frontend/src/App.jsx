@@ -12,6 +12,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import ResumeBuilder from './pages/ResumeBuilder';
 
 function App() {
   return (
@@ -32,6 +33,7 @@ function App() {
           {/* 2. Wrap all "Member Only" pages inside this PrivateRoute element */}
           <Route element={<PrivateRoute />}>
              <Route path="/dashboard" element={<Dashboard />} />
+             <Route path="/builder" element={<ResumeBuilder />} />
              
              {/* Future protected routes will go here, like:
                  <Route path="/builder" element={<ResumeBuilder />} /> 
