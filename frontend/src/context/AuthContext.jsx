@@ -1,13 +1,20 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
-
+import React, { createContext, useState, useContext } from 'react';
 
 const AuthContext = createContext();
 
-
 export const AuthProvider = ({ children }) => {
-    const [user, setUser] = useState(null);
-    const [loading, setLoading] = useState(true);
+    // ⚠️ TEMPORARY COLLABORATOR BYPASS: Hardcoded fake user
+    const [user, setUser] = useState({
+        name: "Test User",
+        email: "test@skit.edu",
+        token: "fake-bypass-token"
+    });
+    
+    // Set to false immediately so the app doesn't hang on a loading screen
+    const [loading] = useState(false); 
 
+    // ⚠️ TEMPORARILY DISABLED: Restore this block when you want real logins again!
+    /*
     useEffect(() => {
         const userInfo = localStorage.getItem('userInfo');
         if (userInfo) {
@@ -15,6 +22,7 @@ export const AuthProvider = ({ children }) => {
         }
         setLoading(false);
     }, []);
+    */
 
     const login = (userData) => {
         localStorage.setItem('userInfo', JSON.stringify(userData));
@@ -23,7 +31,7 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('userInfo');
-        setUser(null);
+        setUser(null); // When testing, clicking logout will still clear the fake user for that session
     };
 
     return (
@@ -33,7 +41,7 @@ export const AuthProvider = ({ children }) => {
     );
 };
 
-
+// eslint-disable-next-line react-refresh/only-export-components
 export const useAuth = () => {
     return useContext(AuthContext);
 };
