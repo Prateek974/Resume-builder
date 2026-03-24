@@ -1,13 +1,21 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import * as htmlToImage from 'html-to-image'; // <--- THE NEW ONE
+import { jsPDF } from 'jspdf';
+
+
 
 const ResumeBuilder = () => {
     const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
+
+    // --- NEW: AI Loading State ---
+    const [isAILoading, setIsAILoading] = useState(false);
 
     // FIX 1: Added missing state for Step 1 Optional Fields
     const [optionalFields, setOptionalFields] = useState({
@@ -41,7 +49,44 @@ const ResumeBuilder = () => {
         skills: "",
         summary: ""
     });
+    // --- NEW: PDF Print Setup ---
+  // --- UPDATED: PDF Print Setup (react-to-print v3) ---
+// --- UPDATED: Direct PDF Download (html2canvas + jsPDF) ---
+// --- UPDATED: Direct PDF Download (html-to-image + jsPDF) ---
+    const resumeRef = useRef(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    
+    const handleDownloadPDF = async () => {
+        const element = resumeRef.current;
+        if (!element) return;
 
+        setIsDownloading(true);
+        try {
+            // 1. Take a high-res snapshot using the modern library
+            const dataUrl = await htmlToImage.toPng(element, {
+                quality: 1,
+                pixelRatio: 2, // Keeps text crisp
+                backgroundColor: '#ffffff'
+            });
+
+            // 2. Create a new PDF document (A4 size)
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            
+            // Calculate height to maintain aspect ratio based on the element
+            const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+
+            // 3. Add image to PDF and trigger silent download
+            pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${resumeData.personalInfo.firstName || 'My'}_Resume.pdf`);
+            
+        } catch (error) {
+            console.error("Failed to generate PDF", error);
+            alert("Oops! Something went wrong generating the PDF.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
     useEffect(() => {
         const fetchResume = async () => {
             if (!user?.token) { setFetching(false); return; }
@@ -65,6 +110,32 @@ const ResumeBuilder = () => {
         };
         fetchResume();
     }, [user]);
+
+    // --- NEW: Groq AI API Call Function ---
+    const handleAIEnhance = async (index, currentText, type) => {
+        if (!currentText) return alert("Please type some rough notes first!");
+        
+        setIsAILoading(true);
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            // Send the rough text to our new Groq backend
+            const { data } = await axios.post('http://localhost:5000/api/ai/enhance', { text: currentText, type }, config);
+
+            // Update the correct text box depending on where they clicked
+            if (type === 'experience') {
+                handleArrayChange(index, 'summary', data.enhancedText, 'experience');
+            } else if (type === 'summary') {
+                setResumeData(prev => ({ ...prev, summary: data.enhancedText }));
+            } else if (type === 'skills') {
+                setResumeData(prev => ({ ...prev, skills: data.enhancedText }));
+            }
+        } catch (error) {
+            console.error(error);
+            alert("AI generation failed. Check your backend console.");
+        } finally {
+            setIsAILoading(false);
+        }
+    };
 
     const handleAddSkill = (skill) => {
         const currentSkills = resumeData.skills || '';
@@ -353,17 +424,24 @@ const ResumeBuilder = () => {
                                         <label htmlFor={`current-${index}`} className="ml-2 text-sm font-bold text-zinc-700 cursor-pointer">I currently work here</label>
                                     </div>
 
+                                    {/* AI ENHANCE ADDED TO EXPERIENCE TEXTAREA */}
                                     <div className="pt-2">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase flex justify-between">
-                                            <span>Job Description</span>
-                                            <span className="text-blue-600 normal-case italic font-medium">✨ AI Polish available in final step</span>
-                                        </label>
-                                        <textarea 
-                                            className="w-full border border-zinc-200 p-3 mt-1 text-sm h-24 focus:border-blue-600 outline-none transition-all"
-                                            value={exp.summary || ''}
-                                            onChange={(e) => handleArrayChange(index, 'summary', e.target.value, 'experience')}
-                                            placeholder="What did you do at this company? (e.g., Developed a REST API using Node.js...)"
-                                        />
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase">Job Description</label>
+                                        <div className="relative mt-1">
+                                            <textarea 
+                                                className="w-full border border-zinc-200 p-3 text-sm h-32 focus:border-blue-600 outline-none transition-all pb-12"
+                                                value={exp.summary || ''}
+                                                onChange={(e) => handleArrayChange(index, 'summary', e.target.value, 'experience')}
+                                                placeholder="What did you do at this company? (e.g., Developed a REST API using Node.js...)"
+                                            />
+                                            <button 
+                                                onClick={() => handleAIEnhance(index, exp.summary, 'experience')} 
+                                                disabled={isAILoading}
+                                                className="absolute bottom-3 right-3 bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
+                                            >
+                                                ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -435,7 +513,7 @@ const ResumeBuilder = () => {
                                     </div>
                                     
                                     <textarea
-                                        className="w-full flex-1 p-4 outline-none resize-none text-sm text-zinc-800"
+                                        className="w-full flex-1 p-4 outline-none resize-none text-sm text-zinc-800 pb-16"
                                         placeholder="Add your skills here. Separate them with commas."
                                         value={resumeData.skills || ''}
                                         onChange={(e) => setResumeData(prev => ({ ...prev, skills: e.target.value }))}
@@ -443,10 +521,11 @@ const ResumeBuilder = () => {
                                     
                                     <div className="absolute bottom-4 right-4">
                                         <button 
-                                            onClick={() => alert("We will hook this up to the Gemini API soon!")} 
-                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm"
+                                            onClick={() => handleAIEnhance(null, resumeData.skills, 'skills')} 
+                                            disabled={isAILoading}
+                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
                                         >
-                                            ✨ Enhance with AI
+                                            ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
                                         </button>
                                     </div>
                                 </div>
@@ -516,7 +595,7 @@ const ResumeBuilder = () => {
                                     </div>
                                     
                                     <textarea
-                                        className="w-full flex-1 p-5 outline-none resize-none text-sm text-zinc-800 leading-relaxed"
+                                        className="w-full flex-1 p-5 outline-none resize-none text-sm text-zinc-800 leading-relaxed pb-16"
                                         placeholder="Write your summary here."
                                         value={resumeData.summary || ''}
                                         onChange={(e) => setResumeData(prev => ({ ...prev, summary: e.target.value }))}
@@ -524,10 +603,11 @@ const ResumeBuilder = () => {
                                     
                                     <div className="absolute bottom-4 right-4">
                                         <button 
-                                            onClick={() => alert("AI generation will be hooked up here!")} 
-                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm"
+                                            onClick={() => handleAIEnhance(null, resumeData.summary, 'summary')} 
+                                            disabled={isAILoading}
+                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
                                         >
-                                            ✨ Enhance with AI
+                                            ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
                                         </button>
                                     </div>
                                 </div>
@@ -552,9 +632,12 @@ const ResumeBuilder = () => {
                         </div>
 
                         {/* Centered Preview rendering the new component */}
-                        <div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg">
-                            <ResumePreview data={resumeData} />
-                        </div>
+                      {/* Centered Preview rendering the new component */}
+<div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg overflow-x-auto bg-zinc-200 p-4">
+    <div ref={resumeRef} className="bg-white shadow-xl">
+        <ResumePreview data={resumeData} />
+    </div>
+</div>
 
                         {/* Final Actions */}
                         <div className="flex flex-wrap justify-center gap-4 w-full border-t border-zinc-200 pt-8">
@@ -565,10 +648,10 @@ const ResumeBuilder = () => {
                                 {loading ? "Saving..." : "Save to Dashboard"}
                             </button>
                             
-                            <button onClick={() => alert("We will integrate react-to-print for PDF downloads next!")} className="bg-zinc-900 text-white px-10 py-3 font-bold rounded shadow-lg hover:bg-black transition-all flex items-center gap-2">
-                                <span className="material-symbols-outlined">download</span>
-                                Download PDF
-                            </button>
+                          <button onClick={handleDownloadPDF} className="bg-zinc-900 text-white px-10 py-3 font-bold rounded shadow-lg hover:bg-black transition-all flex items-center gap-2">
+    <span className="material-symbols-outlined">download</span>
+    Download PDF
+</button>
                         </div>
                     </div>
                 )}
