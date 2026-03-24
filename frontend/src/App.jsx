@@ -13,6 +13,7 @@ import LandingPage from './pages/LandingPage';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
+import ResumeBuilder from './pages/ResumeBuilder';
 
 // 1. Import your new Template file here
 // (Make sure the path matches where you saved template.jsx)
@@ -36,6 +37,7 @@ function App() {
           {/* --- PROTECTED ROUTES --- */}
           <Route element={<PrivateRoute />}>
              <Route path="/dashboard" element={<Dashboard />} />
+             <Route path="/builder" element={<ResumeBuilder />} />
              
              {/* 2. Add the dynamic template route here */}
              {/* The :templateId acts as a variable that changes based on what the user clicks */}
