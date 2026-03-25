@@ -5,6 +5,8 @@ import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
 import * as htmlToImage from 'html-to-image'; // <--- THE NEW ONE
 import { jsPDF } from 'jspdf';
+// Adjust the path if your file is named differently!
+import { templates, availableThemes } from '../components/templates/TemplateRegistry';
 
 
 
@@ -624,11 +626,24 @@ const ResumeBuilder = () => {
                 )}
 
                 {/* STEP 6: FINALIZE */}
-                {step === 6 && (
+             {step === 6 && (
                     <div className="animate-in zoom-in-95 duration-500 w-full max-w-4xl flex flex-col items-center">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-black text-zinc-900 mb-2">Review & Finalize</h2>
                             <p className="text-sm text-zinc-500">Make sure everything looks perfect. You can always go back to edit.</p>
+                        </div>
+
+                        {/* DYNAMIC THEME SWITCHER */}
+                        <div className="flex flex-wrap justify-center gap-4 mb-8 bg-white p-2 rounded-lg shadow-sm border border-zinc-200">
+                            {availableThemes.map((themeOption) => (
+                                <button 
+                                    key={themeOption.id}
+                                    onClick={() => setResumeData({...resumeData, theme: themeOption.id})}
+                                    className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${resumeData.theme === themeOption.id ? 'bg-[#009245] text-white' : 'text-zinc-500 hover:bg-zinc-100'}`}
+                                >
+                                    {themeOption.name}
+                                </button>
+                            ))}
                         </div>
 
                         {/* Centered Preview rendering the new component */}
@@ -696,78 +711,18 @@ const SelectField = ({ label, id, value, onChange, options }) => (
 );
 
 // FIX 3: Reusable Preview Component
-const ResumePreview = ({ data }) => (
-    <div className="w-full max-w-[650px] aspect-[1/1.414] bg-white shadow-2xl p-10 flex flex-col text-left text-zinc-900">
-        {/* Header */}
-        <div className="text-center border-b-2 border-zinc-900 pb-4 mb-5">
-            <h1 className="text-3xl font-black uppercase tracking-tighter">
-                {data.personalInfo.firstName} {data.personalInfo.lastName || "Your Name"}
-            </h1>
-            <p className="text-[10px] font-medium text-zinc-600 mt-1 uppercase tracking-widest">
-                {data.personalInfo.email} {data.personalInfo.phone && `| ${data.personalInfo.phone}`} {data.personalInfo.city && `| ${data.personalInfo.city}`}
-            </p>
-            <p className="text-[10px] text-blue-600 font-bold mt-1">
-                {data.personalInfo.linkedin && `${data.personalInfo.linkedin} `}
-                {data.personalInfo.github && `| ${data.personalInfo.github}`}
-            </p>
+const ResumePreview = ({ data }) => {
+    // 1. Look at the data.theme string (e.g., 'professional')
+    // 2. Try to find a matching component in our registry.
+    // 3. If it can't find one (or if it's undefined), safely default to 'professional'
+    const SelectedTemplate = templates[data?.theme] || templates['professional'];
+
+    // 4. Render whatever template we just picked, and pass the data into it!
+    return (
+        <div className="w-full flex justify-center transition-all duration-300">
+            <SelectedTemplate data={data} />
         </div>
-
-        {/* Summary */}
-        {data.summary && (
-            <div className="mb-5">
-                <p className="text-[10px] leading-relaxed font-medium">{data.summary}</p>
-            </div>
-        )}
-
-        {/* Experience */}
-        {data.experience[0]?.company && (
-            <div className="mb-5">
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Experience</h3>
-                {data.experience.map((exp, i) => (
-                    <div key={i} className="mb-3">
-                        <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-[12px]">{exp.role}</span>
-                            <span className="text-[9px] text-zinc-500 font-bold uppercase">
-                                {exp.startMonth} {exp.startYear} - {exp.isCurrent ? 'Present' : `${exp.endMonth} ${exp.endYear}`}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-baseline mb-1">
-                            <span className="text-[10px] italic font-medium">{exp.company}</span>
-                            <span className="text-[9px] text-zinc-500">{exp.location}</span>
-                        </div>
-                        <p className="text-[10px] leading-relaxed">{exp.summary}</p>
-                    </div>
-                ))}
-            </div>
-        )}
-
-        {/* Education */}
-        {data.education[0]?.school && (
-            <div className="mb-5">
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Education</h3>
-                {data.education.map((edu, i) => (
-                    <div key={i} className="mb-2">
-                        <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-[11px]">{edu.school}</span>
-                            <span className="text-[9px] text-zinc-500 font-bold">{edu.endYear}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                            <span className="text-[10px]">{edu.degree} {edu.fieldOfStudy && `in ${edu.fieldOfStudy}`}</span>
-                            {edu.cgpa && <span className="text-[10px] font-bold text-zinc-700">CGPA: {edu.cgpa}</span>}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )}
-
-        {/* Skills */}
-        {data.skills && (
-            <div>
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Skills</h3>
-                <p className="text-[10px] leading-relaxed font-medium">{data.skills}</p>
-            </div>
-        )}
-    </div>
-);
+    );
+};
 
 export default ResumeBuilder;
