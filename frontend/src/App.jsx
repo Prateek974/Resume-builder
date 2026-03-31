@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
 
 import { AuthProvider } from './context/AuthContext'; 
 import PrivateRoute from './components/ui/PrivateRoute'; 
@@ -15,39 +15,61 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
 
-// 1. Import your new Template file here
-// (Make sure the path matches where you saved template.jsx)
+// 1. Import your dynamic Template workspace
 import Template from './pages/template'; 
+
+// ==========================================
+// LAYOUT COMPONENT
+// Wraps standard pages with the global Navbar & Footer
+// ==========================================
+const MainLayout = () => {
+  return (
+    <div className="flex flex-col min-h-screen">
+      <Navbar />
+      {/* <Outlet /> is where the specific page content will be injected */}
+      <main className="flex-grow">
+        <Outlet /> 
+      </main>
+      <Footer />
+    </div>
+  );
+};
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
-        
-        <Navbar />
-
         <Routes>
-          {/* --- PUBLIC ROUTES --- */}
-          <Route path="/" element={<LandingPage />} />
-          <Route path="/login" element={<Login />} />
-          <Route path="/register" element={<Register />} />
-          <Route path="/contact" element={<ContactPage />} />
-          <Route path="/pricing" element={<Pricing />} />
+          
+          {/* ========================================== */}
+          {/* GROUP 1: PAGES WITH NAVBAR & FOOTER        */}
+          {/* ========================================== */}
+          <Route element={<MainLayout />}>
+            
+            {/* Public Routes */}
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/register" element={<Register />} />
+            <Route path="/contact" element={<ContactPage />} />
+            <Route path="/pricing" element={<Pricing />} />
 
-          {/* --- PROTECTED ROUTES --- */}
-          <Route element={<PrivateRoute />}>
-             <Route path="/dashboard" element={<Dashboard />} />
-             <Route path="/builder" element={<ResumeBuilder />} />
-             
-             {/* 2. Add the dynamic template route here */}
-             {/* The :templateId acts as a variable that changes based on what the user clicks */}
-             <Route path="/template/:templateId" element={<Template />} />
-             
+            {/* Protected Routes (Require Login, but still have standard layout) */}
+            <Route element={<PrivateRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/builder" element={<ResumeBuilder />} />
+            </Route>
+
           </Route>
-        </Routes>
 
-        <Footer />
-        
+          {/* ========================================== */}
+          {/* GROUP 2: FULL-SCREEN WORKSPACES            */}
+          {/* No Navbar, No Footer                       */}
+          {/* ========================================== */}
+          <Route element={<PrivateRoute />}>
+            <Route path="/template/:templateId" element={<Template />} />
+          </Route>
+
+        </Routes>
       </BrowserRouter>
     </AuthProvider>
   );
