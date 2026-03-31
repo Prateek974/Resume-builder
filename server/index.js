@@ -14,6 +14,7 @@ app.use(express.json());
 
 // --- ROUTES ---
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/ai', require('./routes/aiRoutes'));
 
 // ADD THIS LINE BELOW:
 // This tells the server: "Any request starting with /api/resumes should go to resumeRoutes"

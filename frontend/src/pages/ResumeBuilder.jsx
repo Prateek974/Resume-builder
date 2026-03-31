@@ -1,13 +1,23 @@
 /* eslint-disable no-unused-vars */
-import React, { useState, useEffect } from 'react';
+/* eslint-disable no-unused-vars */
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
+import * as htmlToImage from 'html-to-image'; // <--- THE NEW ONE
+import { jsPDF } from 'jspdf';
+// Adjust the path if your file is named differently!
+import { templates, availableThemes } from '../components/templates/TemplateRegistry';
+
+
 
 const ResumeBuilder = () => {
     const { user } = useAuth();
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
+
+    // --- NEW: AI Loading State ---
+    const [isAILoading, setIsAILoading] = useState(false);
 
     // FIX 1: Added missing state for Step 1 Optional Fields
     const [optionalFields, setOptionalFields] = useState({
@@ -41,7 +51,44 @@ const ResumeBuilder = () => {
         skills: "",
         summary: ""
     });
+    // --- NEW: PDF Print Setup ---
+  // --- UPDATED: PDF Print Setup (react-to-print v3) ---
+// --- UPDATED: Direct PDF Download (html2canvas + jsPDF) ---
+// --- UPDATED: Direct PDF Download (html-to-image + jsPDF) ---
+    const resumeRef = useRef(null);
+    const [isDownloading, setIsDownloading] = useState(false);
+    
+    const handleDownloadPDF = async () => {
+        const element = resumeRef.current;
+        if (!element) return;
 
+        setIsDownloading(true);
+        try {
+            // 1. Take a high-res snapshot using the modern library
+            const dataUrl = await htmlToImage.toPng(element, {
+                quality: 1,
+                pixelRatio: 2, // Keeps text crisp
+                backgroundColor: '#ffffff'
+            });
+
+            // 2. Create a new PDF document (A4 size)
+            const pdf = new jsPDF('p', 'mm', 'a4');
+            const pdfWidth = pdf.internal.pageSize.getWidth();
+            
+            // Calculate height to maintain aspect ratio based on the element
+            const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
+
+            // 3. Add image to PDF and trigger silent download
+            pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
+            pdf.save(`${resumeData.personalInfo.firstName || 'My'}_Resume.pdf`);
+            
+        } catch (error) {
+            console.error("Failed to generate PDF", error);
+            alert("Oops! Something went wrong generating the PDF.");
+        } finally {
+            setIsDownloading(false);
+        }
+    };
     useEffect(() => {
         const fetchResume = async () => {
             if (!user?.token) { setFetching(false); return; }
@@ -65,6 +112,32 @@ const ResumeBuilder = () => {
         };
         fetchResume();
     }, [user]);
+
+    // --- NEW: Groq AI API Call Function ---
+    const handleAIEnhance = async (index, currentText, type) => {
+        if (!currentText) return alert("Please type some rough notes first!");
+        
+        setIsAILoading(true);
+        try {
+            const config = { headers: { Authorization: `Bearer ${user.token}` } };
+            // Send the rough text to our new Groq backend
+            const { data } = await axios.post('http://localhost:5000/api/ai/enhance', { text: currentText, type }, config);
+
+            // Update the correct text box depending on where they clicked
+            if (type === 'experience') {
+                handleArrayChange(index, 'summary', data.enhancedText, 'experience');
+            } else if (type === 'summary') {
+                setResumeData(prev => ({ ...prev, summary: data.enhancedText }));
+            } else if (type === 'skills') {
+                setResumeData(prev => ({ ...prev, skills: data.enhancedText }));
+            }
+        } catch (error) {
+            console.error(error);
+            alert("AI generation failed. Check your backend console.");
+        } finally {
+            setIsAILoading(false);
+        }
+    };
 
     const handleAddSkill = (skill) => {
         const currentSkills = resumeData.skills || '';
@@ -353,17 +426,24 @@ const ResumeBuilder = () => {
                                         <label htmlFor={`current-${index}`} className="ml-2 text-sm font-bold text-zinc-700 cursor-pointer">I currently work here</label>
                                     </div>
 
+                                    {/* AI ENHANCE ADDED TO EXPERIENCE TEXTAREA */}
                                     <div className="pt-2">
-                                        <label className="text-[10px] font-black text-zinc-500 uppercase flex justify-between">
-                                            <span>Job Description</span>
-                                            <span className="text-blue-600 normal-case italic font-medium">✨ AI Polish available in final step</span>
-                                        </label>
-                                        <textarea 
-                                            className="w-full border border-zinc-200 p-3 mt-1 text-sm h-24 focus:border-blue-600 outline-none transition-all"
-                                            value={exp.summary || ''}
-                                            onChange={(e) => handleArrayChange(index, 'summary', e.target.value, 'experience')}
-                                            placeholder="What did you do at this company? (e.g., Developed a REST API using Node.js...)"
-                                        />
+                                        <label className="text-[10px] font-black text-zinc-500 uppercase">Job Description</label>
+                                        <div className="relative mt-1">
+                                            <textarea 
+                                                className="w-full border border-zinc-200 p-3 text-sm h-32 focus:border-blue-600 outline-none transition-all pb-12"
+                                                value={exp.summary || ''}
+                                                onChange={(e) => handleArrayChange(index, 'summary', e.target.value, 'experience')}
+                                                placeholder="What did you do at this company? (e.g., Developed a REST API using Node.js...)"
+                                            />
+                                            <button 
+                                                onClick={() => handleAIEnhance(index, exp.summary, 'experience')} 
+                                                disabled={isAILoading}
+                                                className="absolute bottom-3 right-3 bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-[10px] font-bold px-3 py-1.5 rounded-full flex items-center gap-1 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
+                                            >
+                                                ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -435,7 +515,7 @@ const ResumeBuilder = () => {
                                     </div>
                                     
                                     <textarea
-                                        className="w-full flex-1 p-4 outline-none resize-none text-sm text-zinc-800"
+                                        className="w-full flex-1 p-4 outline-none resize-none text-sm text-zinc-800 pb-16"
                                         placeholder="Add your skills here. Separate them with commas."
                                         value={resumeData.skills || ''}
                                         onChange={(e) => setResumeData(prev => ({ ...prev, skills: e.target.value }))}
@@ -443,10 +523,11 @@ const ResumeBuilder = () => {
                                     
                                     <div className="absolute bottom-4 right-4">
                                         <button 
-                                            onClick={() => alert("We will hook this up to the Gemini API soon!")} 
-                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm"
+                                            onClick={() => handleAIEnhance(null, resumeData.skills, 'skills')} 
+                                            disabled={isAILoading}
+                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
                                         >
-                                            ✨ Enhance with AI
+                                            ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
                                         </button>
                                     </div>
                                 </div>
@@ -516,7 +597,7 @@ const ResumeBuilder = () => {
                                     </div>
                                     
                                     <textarea
-                                        className="w-full flex-1 p-5 outline-none resize-none text-sm text-zinc-800 leading-relaxed"
+                                        className="w-full flex-1 p-5 outline-none resize-none text-sm text-zinc-800 leading-relaxed pb-16"
                                         placeholder="Write your summary here."
                                         value={resumeData.summary || ''}
                                         onChange={(e) => setResumeData(prev => ({ ...prev, summary: e.target.value }))}
@@ -524,10 +605,11 @@ const ResumeBuilder = () => {
                                     
                                     <div className="absolute bottom-4 right-4">
                                         <button 
-                                            onClick={() => alert("AI generation will be hooked up here!")} 
-                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm"
+                                            onClick={() => handleAIEnhance(null, resumeData.summary, 'summary')} 
+                                            disabled={isAILoading}
+                                            className="bg-[#fef9c3] border border-[#fde047] text-yellow-800 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-1.5 hover:bg-yellow-200 transition-colors shadow-sm disabled:opacity-50"
                                         >
-                                            ✨ Enhance with AI
+                                            ✨ {isAILoading ? "Enhancing..." : "Enhance with AI"}
                                         </button>
                                     </div>
                                 </div>
@@ -544,17 +626,33 @@ const ResumeBuilder = () => {
                 )}
 
                 {/* STEP 6: FINALIZE */}
-                {step === 6 && (
+             {step === 6 && (
                     <div className="animate-in zoom-in-95 duration-500 w-full max-w-4xl flex flex-col items-center">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-black text-zinc-900 mb-2">Review & Finalize</h2>
                             <p className="text-sm text-zinc-500">Make sure everything looks perfect. You can always go back to edit.</p>
                         </div>
 
-                        {/* Centered Preview rendering the new component */}
-                        <div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg">
-                            <ResumePreview data={resumeData} />
+                        {/* DYNAMIC THEME SWITCHER */}
+                        <div className="flex flex-wrap justify-center gap-4 mb-8 bg-white p-2 rounded-lg shadow-sm border border-zinc-200">
+                            {availableThemes.map((themeOption) => (
+                                <button 
+                                    key={themeOption.id}
+                                    onClick={() => setResumeData({...resumeData, theme: themeOption.id})}
+                                    className={`px-6 py-2 rounded-md text-sm font-bold transition-all ${resumeData.theme === themeOption.id ? 'bg-[#009245] text-white' : 'text-zinc-500 hover:bg-zinc-100'}`}
+                                >
+                                    {themeOption.name}
+                                </button>
+                            ))}
                         </div>
+
+                        {/* Centered Preview rendering the new component */}
+                      {/* Centered Preview rendering the new component */}
+<div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg overflow-x-auto bg-zinc-200 p-4">
+    <div ref={resumeRef} className="bg-white shadow-xl">
+        <ResumePreview data={resumeData} />
+    </div>
+</div>
 
                         {/* Final Actions */}
                         <div className="flex flex-wrap justify-center gap-4 w-full border-t border-zinc-200 pt-8">
@@ -565,10 +663,10 @@ const ResumeBuilder = () => {
                                 {loading ? "Saving..." : "Save to Dashboard"}
                             </button>
                             
-                            <button onClick={() => alert("We will integrate react-to-print for PDF downloads next!")} className="bg-zinc-900 text-white px-10 py-3 font-bold rounded shadow-lg hover:bg-black transition-all flex items-center gap-2">
-                                <span className="material-symbols-outlined">download</span>
-                                Download PDF
-                            </button>
+                          <button onClick={handleDownloadPDF} className="bg-zinc-900 text-white px-10 py-3 font-bold rounded shadow-lg hover:bg-black transition-all flex items-center gap-2">
+    <span className="material-symbols-outlined">download</span>
+    Download PDF
+</button>
                         </div>
                     </div>
                 )}
@@ -613,78 +711,18 @@ const SelectField = ({ label, id, value, onChange, options }) => (
 );
 
 // FIX 3: Reusable Preview Component
-const ResumePreview = ({ data }) => (
-    <div className="w-full max-w-[650px] aspect-[1/1.414] bg-white shadow-2xl p-10 flex flex-col text-left text-zinc-900">
-        {/* Header */}
-        <div className="text-center border-b-2 border-zinc-900 pb-4 mb-5">
-            <h1 className="text-3xl font-black uppercase tracking-tighter">
-                {data.personalInfo.firstName} {data.personalInfo.lastName || "Your Name"}
-            </h1>
-            <p className="text-[10px] font-medium text-zinc-600 mt-1 uppercase tracking-widest">
-                {data.personalInfo.email} {data.personalInfo.phone && `| ${data.personalInfo.phone}`} {data.personalInfo.city && `| ${data.personalInfo.city}`}
-            </p>
-            <p className="text-[10px] text-blue-600 font-bold mt-1">
-                {data.personalInfo.linkedin && `${data.personalInfo.linkedin} `}
-                {data.personalInfo.github && `| ${data.personalInfo.github}`}
-            </p>
+const ResumePreview = ({ data }) => {
+    // 1. Look at the data.theme string (e.g., 'professional')
+    // 2. Try to find a matching component in our registry.
+    // 3. If it can't find one (or if it's undefined), safely default to 'professional'
+    const SelectedTemplate = templates[data?.theme] || templates['professional'];
+
+    // 4. Render whatever template we just picked, and pass the data into it!
+    return (
+        <div className="w-full flex justify-center transition-all duration-300">
+            <SelectedTemplate data={data} />
         </div>
-
-        {/* Summary */}
-        {data.summary && (
-            <div className="mb-5">
-                <p className="text-[10px] leading-relaxed font-medium">{data.summary}</p>
-            </div>
-        )}
-
-        {/* Experience */}
-        {data.experience[0]?.company && (
-            <div className="mb-5">
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Experience</h3>
-                {data.experience.map((exp, i) => (
-                    <div key={i} className="mb-3">
-                        <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-[12px]">{exp.role}</span>
-                            <span className="text-[9px] text-zinc-500 font-bold uppercase">
-                                {exp.startMonth} {exp.startYear} - {exp.isCurrent ? 'Present' : `${exp.endMonth} ${exp.endYear}`}
-                            </span>
-                        </div>
-                        <div className="flex justify-between items-baseline mb-1">
-                            <span className="text-[10px] italic font-medium">{exp.company}</span>
-                            <span className="text-[9px] text-zinc-500">{exp.location}</span>
-                        </div>
-                        <p className="text-[10px] leading-relaxed">{exp.summary}</p>
-                    </div>
-                ))}
-            </div>
-        )}
-
-        {/* Education */}
-        {data.education[0]?.school && (
-            <div className="mb-5">
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Education</h3>
-                {data.education.map((edu, i) => (
-                    <div key={i} className="mb-2">
-                        <div className="flex justify-between items-baseline">
-                            <span className="font-bold text-[11px]">{edu.school}</span>
-                            <span className="text-[9px] text-zinc-500 font-bold">{edu.endYear}</span>
-                        </div>
-                        <div className="flex justify-between items-baseline">
-                            <span className="text-[10px]">{edu.degree} {edu.fieldOfStudy && `in ${edu.fieldOfStudy}`}</span>
-                            {edu.cgpa && <span className="text-[10px] font-bold text-zinc-700">CGPA: {edu.cgpa}</span>}
-                        </div>
-                    </div>
-                ))}
-            </div>
-        )}
-
-        {/* Skills */}
-        {data.skills && (
-            <div>
-                <h3 className="text-[11px] font-black uppercase border-b border-zinc-200 mb-2 pb-1 tracking-widest text-[#009245]">Skills</h3>
-                <p className="text-[10px] leading-relaxed font-medium">{data.skills}</p>
-            </div>
-        )}
-    </div>
-);
+    );
+};
 
 export default ResumeBuilder;
