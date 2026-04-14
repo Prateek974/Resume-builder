@@ -21,7 +21,7 @@ const AtsScorer = ({ resumeData }) => {
             `;
 
             // Make the call to your new backend route
-            const response = await fetch('https://resume-builder-api-rdkz.onrender.com//api/ai/ats-score', {
+            const response = await fetch('https://resume-builder-api-rdkz.onrender.com/api/ai/ats-score', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

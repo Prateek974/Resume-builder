@@ -22,7 +22,7 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault(); 
     try {
-      const response = await axios.post('https://resume-builder-api-rdkz.onrender.com//api/auth/login', {
+      const response = await axios.post('https://resume-builder-api-rdkz.onrender.com/api/auth/login', {
         email: formData.email,
         password: formData.password
       });
@@ -38,7 +38,7 @@ const Login = () => {
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
       // Send the credential (ID Token) to your backend
-      const { data } = await axios.post('https://resume-builder-api-rdkz.onrender.com//api/auth/google', {
+      const { data } = await axios.post('https://resume-builder-api-rdkz.onrender.com/api/auth/google', {
         token: credentialResponse.credential
       });
 

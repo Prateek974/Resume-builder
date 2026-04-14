@@ -26,7 +26,7 @@ const Dashboard = () => {
 
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
-                const { data } = await axios.get('https://resume-builder-api-rdkz.onrender.com//api/resumes/me', config);
+                const { data } = await axios.get('https://resume-builder-api-rdkz.onrender.com/api/resumes/me', config);
                 
                 console.log("BACKEND RESPONSE:", data); 
 
