@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter, Routes, Route, Outlet } from 'react-router-dom';
-
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { AuthProvider } from './context/AuthContext'; 
 import PrivateRoute from './components/ui/PrivateRoute'; 
 
@@ -31,6 +31,7 @@ const MainLayout = () => {
 
 function App() {
   return (
+    <GoogleOAuthProvider clientId="816895392084-ula7j0bgeer5p4pp6coh4jsespfq7d3b.apps.googleusercontent.com">
     <AuthProvider>
       <BrowserRouter>
         <Routes>
@@ -69,6 +70,7 @@ function App() {
         </Routes>
       </BrowserRouter>
     </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

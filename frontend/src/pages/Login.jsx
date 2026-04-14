@@ -1,12 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios'; 
-import { useAuth } from '../context/AuthContext'; // 1. Import your Auth Hook
+import { useAuth } from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate(); 
-  const { login } = useAuth(); // 2. Destructure the login function
+  const { login } = useAuth(); 
 
   const [formData, setFormData] = useState({
     email: '',
@@ -17,6 +18,7 @@ const Login = () => {
     setFormData({ ...formData, [e.target.id]: e.target.value });
   };
 
+  // --- Email/Password Login ---
   const handleLogin = async (e) => {
     e.preventDefault(); 
     try {
@@ -24,18 +26,28 @@ const Login = () => {
         email: formData.email,
         password: formData.password
       });
-
-      console.log("Login Success:", response.data);
-
-      // 3. REMOVED: localStorage.setItem('userInfo', ...)
-      // 4. ADDED: login(response.data)
-      // This function updates LocalStorage AND the Global State instantly.
       login(response.data);
-
-      navigate('/dashboard'); // Navigating to Dashboard is usually better than '/'
+      navigate('/dashboard'); 
     } catch (error) {
       console.error(error);
       alert(error.response?.data?.message || "Invalid Email or Password");
+    }
+  };
+
+  // --- Google Login Success ---
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      // Send the credential (ID Token) to your backend
+      const { data } = await axios.post('http://localhost:5000/api/auth/google', {
+        token: credentialResponse.credential
+      });
+
+      // Log the user in with the token returned by your own backend
+      login(data);
+      navigate('/dashboard');
+    } catch (error) {
+      console.error("Google Auth Error:", error);
+      alert("Google Login failed. Please check if your backend is running.");
     }
   };
 
@@ -123,13 +135,16 @@ const Login = () => {
                 <div className="flex-grow border-t border-zinc-200"></div>
             </div>
 
-            <button 
-                type="button" 
-                className="w-full bg-white border border-zinc-300 text-zinc-700 hover:bg-zinc-50 hover:border-zinc-400 font-medium py-2.5 text-sm transition-all flex items-center justify-center gap-2"
-            >
-                <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-5 h-5" alt="Google" />
-                Continue with Google
-            </button>
+            {/* --- Updated Google Login Button --- */}
+            <div className="w-full flex justify-center">
+              <GoogleLogin
+                onSuccess={handleGoogleSuccess}
+                onError={() => console.log('Login Failed')}
+                theme="outline"
+                size="large"
+                width="100%"
+              />
+            </div>
           </div>
         </form>
 

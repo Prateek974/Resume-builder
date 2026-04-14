@@ -13,29 +13,39 @@ const Dashboard = () => {
     const [loadingResume, setLoadingResume] = useState(true);
 
     // Fetch the resume when the dashboard loads
-   useEffect(() => {
+    useEffect(() => {
         const fetchSavedResume = async () => {
-            if (!user?.token) return;
+            if (!user?.token) {
+                setSavedResume(null);
+                return;
+            }
+
+            // STEP 1: Clear old data immediately so Account A doesn't see Account B's work
+            setSavedResume(null);
+            setLoadingResume(true);
+
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get('http://localhost:5000/api/resumes/me', config);
                 
-                // 🕵️‍♂️ THE TRACKER: Let's see exactly what the backend sends!
                 console.log("BACKEND RESPONSE:", data); 
 
-                // Safety Check: If your backend sends an array like [ {resume} ], grab the first item
                 const actualResumeData = Array.isArray(data) ? data[0] : data;
 
-                // If we have data, and it has personalInfo, set it!
+                // STEP 2: Explicitly check for data. If missing, keep state as null.
                 if (actualResumeData && actualResumeData.personalInfo) {
                     setSavedResume(actualResumeData);
+                } else {
+                    setSavedResume(null); // No resume found for THIS user
                 }
             } catch (err) {
                 console.error("Dashboard fetch error:", err);
+                setSavedResume(null);
             } finally {
                 setLoadingResume(false);
             }
         };
+
         fetchSavedResume();
     }, [user]);
 
