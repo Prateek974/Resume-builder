@@ -1,11 +1,10 @@
 import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
-// We use ../../ to go up from 'ui' to 'components', then up to 'src' 
-// before entering the 'context' folder.
-import { useAuth } from '../../context/AuthContext'; 
+import { useAuth } from '../../context/AuthContext';
 
 const PrivateRoute = () => {
-    const { user, loading } = useAuth();
+    // Grab the explicit boolean we created in the Context
+    const { isAuthenticated, loading } = useAuth();
 
     // 1. Crucial: While reading from localStorage, show a loading spinner.
     // This stops the app from accidentally kicking a logged-in user to /login
@@ -18,9 +17,9 @@ const PrivateRoute = () => {
         );
     }
 
-    // 2. If user exists, show the protected page (the nested Route)
+    // 2. If authenticated, show the protected page (the nested Route)
     // 3. If not, redirect to login and "replace" the history entry
-    return user ? <Outlet /> : <Navigate to="/login" replace />;
+    return isAuthenticated ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 export default PrivateRoute;

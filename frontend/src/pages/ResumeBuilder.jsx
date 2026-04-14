@@ -1,25 +1,24 @@
 /* eslint-disable no-unused-vars */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import * as htmlToImage from 'html-to-image'; // <--- THE NEW ONE
+import { useParams } from 'react-router-dom'; // <--- NEW: Import useParams
+import * as htmlToImage from 'html-to-image';
 import { jsPDF } from 'jspdf';
-// Adjust the path if your file is named differently!
+import AtsScorer from '../components/AtsScorer';
 import { templates, availableThemes } from '../components/templates/TemplateRegistry';
-
-
 
 const ResumeBuilder = () => {
     const { user } = useAuth();
+    
+    // --- NEW: Grab the template ID from the URL ---
+    const { templateId } = useParams();
+
     const [step, setStep] = useState(1);
     const [loading, setLoading] = useState(false);
     const [fetching, setFetching] = useState(true);
-
-    // --- NEW: AI Loading State ---
     const [isAILoading, setIsAILoading] = useState(false);
 
-    // FIX 1: Added missing state for Step 1 Optional Fields
     const [optionalFields, setOptionalFields] = useState({
         linkedin: false,
         github: false,
@@ -30,8 +29,9 @@ const ResumeBuilder = () => {
         setOptionalFields(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
-    // FIX 2: Normalized firstName/lastName in Initial State
+    // --- UPDATED: Added theme initialization from URL ---
     const [resumeData, setResumeData] = useState({
+        theme: templateId || 'professional', // Starts with URL template or defaults to professional
         resumeTitle: "My Professional Resume",
         personalInfo: {
             firstName: user?.name?.split(' ')[0] || '',
@@ -51,10 +51,7 @@ const ResumeBuilder = () => {
         skills: "",
         summary: ""
     });
-    // --- NEW: PDF Print Setup ---
-  // --- UPDATED: PDF Print Setup (react-to-print v3) ---
-// --- UPDATED: Direct PDF Download (html2canvas + jsPDF) ---
-// --- UPDATED: Direct PDF Download (html-to-image + jsPDF) ---
+
     const resumeRef = useRef(null);
     const [isDownloading, setIsDownloading] = useState(false);
     
@@ -64,21 +61,16 @@ const ResumeBuilder = () => {
 
         setIsDownloading(true);
         try {
-            // 1. Take a high-res snapshot using the modern library
             const dataUrl = await htmlToImage.toPng(element, {
                 quality: 1,
-                pixelRatio: 2, // Keeps text crisp
+                pixelRatio: 2,
                 backgroundColor: '#ffffff'
             });
 
-            // 2. Create a new PDF document (A4 size)
             const pdf = new jsPDF('p', 'mm', 'a4');
             const pdfWidth = pdf.internal.pageSize.getWidth();
-            
-            // Calculate height to maintain aspect ratio based on the element
             const pdfHeight = (element.offsetHeight * pdfWidth) / element.offsetWidth;
 
-            // 3. Add image to PDF and trigger silent download
             pdf.addImage(dataUrl, 'PNG', 0, 0, pdfWidth, pdfHeight);
             pdf.save(`${resumeData.personalInfo.firstName || 'My'}_Resume.pdf`);
             
@@ -89,6 +81,7 @@ const ResumeBuilder = () => {
             setIsDownloading(false);
         }
     };
+
     useEffect(() => {
         const fetchResume = async () => {
             if (!user?.token) { setFetching(false); return; }
@@ -96,34 +89,33 @@ const ResumeBuilder = () => {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
                 const { data } = await axios.get('http://localhost:5000/api/resumes/me', config);
                 if (data) {
-                    setResumeData({
+                    setResumeData(prev => ({
                         ...data,
+                        // Ensure we don't overwrite the URL-selected theme with an old saved theme if starting fresh
+                        theme: templateId || data.theme || 'professional', 
                         personalInfo: {
                             ...data.personalInfo,
                             firstName: data.personalInfo?.firstName || data.personalInfo?.fullName?.split(' ')[0] || user.name.split(' ')[0],
                             lastName: data.personalInfo?.lastName || data.personalInfo?.fullName?.split(' ').slice(1).join(' ') || user.name.split(' ').slice(1).join(' '),
                             email: data.personalInfo?.email || user.email
                         }
-                    });
+                    }));
                 }
             } catch (err) {
                 console.log("Starting fresh.");
             } finally { setFetching(false); }
         };
         fetchResume();
-    }, [user]);
+    }, [user, templateId]); // Added templateId as dependency
 
-    // --- NEW: Groq AI API Call Function ---
     const handleAIEnhance = async (index, currentText, type) => {
         if (!currentText) return alert("Please type some rough notes first!");
         
         setIsAILoading(true);
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            // Send the rough text to our new Groq backend
             const { data } = await axios.post('http://localhost:5000/api/ai/enhance', { text: currentText, type }, config);
 
-            // Update the correct text box depending on where they clicked
             if (type === 'experience') {
                 handleArrayChange(index, 'summary', data.enhancedText, 'experience');
             } else if (type === 'summary') {
@@ -144,13 +136,13 @@ const ResumeBuilder = () => {
         const newSkills = currentSkills ? `${currentSkills}, ${skill}` : skill;
         setResumeData(prev => ({ ...prev, skills: newSkills }));
     };
+
     const handleAddSummary = (text) => {
         const currentSummary = resumeData.summary || '';
         const newSummary = currentSummary ? `${currentSummary} ${text}` : text;
         setResumeData(prev => ({ ...prev, summary: newSummary }));
     };
 
-    // --- UNIVERSAL HANDLERS ---
     const handlePersonalChange = (e) => {
         const { id, value } = e.target;
         setResumeData(prev => ({
@@ -191,10 +183,8 @@ const ResumeBuilder = () => {
     return (
         <div className="flex flex-col lg:flex-row h-[calc(100vh-56px)] bg-zinc-50 font-sans">
             
-            {/* FIX 4: LEFT/MAIN SECTION (Expands to 100% width on Step 6) */}
             <div className={`w-full overflow-y-auto bg-white shadow-inner transition-all duration-500 ${step === 6 ? 'lg:w-full flex flex-col items-center p-6 md:p-12' : 'lg:w-[60%] p-6 md:p-12'}`}>
                 
-                {/* 6-STEP NAVIGATION BAR */}
                 <div className={`flex flex-wrap items-center gap-3 mb-10 text-[10px] font-bold uppercase tracking-tighter text-zinc-400 ${step === 6 ? 'justify-center w-full max-w-4xl' : ''}`}>
                     {['Heading', 'Education', 'Work', 'Skills', 'Summary', 'Finalize'].map((label, i) => (
                         <React.Fragment key={i}>
@@ -208,40 +198,28 @@ const ResumeBuilder = () => {
                         </React.Fragment>
                     ))}
                 </div>
-
-                {/* --- STEP CONTENT RENDERER --- */}
                 
-                {/* STEP 1: HEADING */}
                 {step === 1 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-4xl">
                         <p className="text-sm text-zinc-500 mb-8">We suggest including an email and phone number.</p>
 
-                        <div className="flex flex-col md:flex-row gap-8 mb-8">
-                            <div className="flex flex-col items-center gap-3 w-[120px] shrink-0">
-                                <div className="w-24 h-24 bg-zinc-200 flex items-center justify-center text-zinc-400">
-                                    <span className="material-symbols-outlined text-5xl">person</span>
-                                </div>
-                                <button className="text-blue-600 text-xs font-bold hover:underline">Upload Photo</button>
+                        <div className="space-y-5 mb-8">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <InputField label="First Name" id="firstName" value={resumeData.personalInfo.firstName} onChange={handlePersonalChange} />
+                                <InputField label="Surname" id="lastName" value={resumeData.personalInfo.lastName} onChange={handlePersonalChange} />
                             </div>
 
-                            <div className="flex-1 space-y-5">
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <InputField label="First Name" id="firstName" value={resumeData.personalInfo.firstName} onChange={handlePersonalChange} />
-                                    <InputField label="Surname" id="lastName" value={resumeData.personalInfo.lastName} onChange={handlePersonalChange} />
-                                </div>
+                            <InputField label="Profession" id="profession" value={resumeData.personalInfo.profession} onChange={handlePersonalChange} placeholder="e.g. Data Science Student" />
 
-                                <InputField label="Profession" id="profession" value={resumeData.personalInfo.profession} onChange={handlePersonalChange} placeholder="e.g. Data Science Student" />
+                            <div className="grid grid-cols-3 gap-5">
+                                <InputField label="City" id="city" value={resumeData.personalInfo.city} onChange={handlePersonalChange} placeholder="e.g. Jaipur" />
+                                <InputField label="Country" id="country" value={resumeData.personalInfo.country} onChange={handlePersonalChange} placeholder="e.g. India" />
+                                <InputField label="Pin Code" id="pinCode" value={resumeData.personalInfo.pinCode} onChange={handlePersonalChange} />
+                            </div>
 
-                                <div className="grid grid-cols-3 gap-5">
-                                    <InputField label="City" id="city" value={resumeData.personalInfo.city} onChange={handlePersonalChange} placeholder="e.g. Jaipur" />
-                                    <InputField label="Country" id="country" value={resumeData.personalInfo.country} onChange={handlePersonalChange} placeholder="e.g. India" />
-                                    <InputField label="Pin Code" id="pinCode" value={resumeData.personalInfo.pinCode} onChange={handlePersonalChange} />
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                    <InputField label="Phone" id="phone" value={resumeData.personalInfo.phone} onChange={handlePersonalChange} />
-                                    <InputField label="Email *" id="email" value={resumeData.personalInfo.email} onChange={handlePersonalChange} />
-                                </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                <InputField label="Phone" id="phone" value={resumeData.personalInfo.phone} onChange={handlePersonalChange} />
+                                <InputField label="Email *" id="email" value={resumeData.personalInfo.email} onChange={handlePersonalChange} />
                             </div>
                         </div>
 
@@ -285,7 +263,6 @@ const ResumeBuilder = () => {
                     </div>
                 )}
 
-                {/* STEP 2: EDUCATION */}
                 {step === 2 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-4xl">
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">Tell us about your education</h2>
@@ -343,7 +320,6 @@ const ResumeBuilder = () => {
                     </div>
                 )}
 
-                {/* STEP 3: WORK HISTORY */}
                 {step === 3 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-4xl">
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">Tell us about your most recent job</h2>
@@ -426,7 +402,6 @@ const ResumeBuilder = () => {
                                         <label htmlFor={`current-${index}`} className="ml-2 text-sm font-bold text-zinc-700 cursor-pointer">I currently work here</label>
                                     </div>
 
-                                    {/* AI ENHANCE ADDED TO EXPERIENCE TEXTAREA */}
                                     <div className="pt-2">
                                         <label className="text-[10px] font-black text-zinc-500 uppercase">Job Description</label>
                                         <div className="relative mt-1">
@@ -462,7 +437,6 @@ const ResumeBuilder = () => {
                     </div>
                 )}
 
-                {/* STEP 4: SKILLS */}
                 {step === 4 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-4xl">
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">What skills would you like to highlight?</h2>
@@ -543,7 +517,6 @@ const ResumeBuilder = () => {
                     </div>
                 )}
 
-                {/* STEP 5: SUMMARY */}
                 {step === 5 && (
                     <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 w-full max-w-4xl">
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">Briefly tell us about your background</h2>
@@ -625,15 +598,13 @@ const ResumeBuilder = () => {
                     </div>
                 )}
 
-                {/* STEP 6: FINALIZE */}
-             {step === 6 && (
+                {step === 6 && (
                     <div className="animate-in zoom-in-95 duration-500 w-full max-w-4xl flex flex-col items-center">
                         <div className="text-center mb-8">
                             <h2 className="text-3xl font-black text-zinc-900 mb-2">Review & Finalize</h2>
                             <p className="text-sm text-zinc-500">Make sure everything looks perfect. You can always go back to edit.</p>
                         </div>
 
-                        {/* DYNAMIC THEME SWITCHER */}
                         <div className="flex flex-wrap justify-center gap-4 mb-8 bg-white p-2 rounded-lg shadow-sm border border-zinc-200">
                             {availableThemes.map((themeOption) => (
                                 <button 
@@ -645,16 +616,14 @@ const ResumeBuilder = () => {
                                 </button>
                             ))}
                         </div>
+                        <AtsScorer resumeData={resumeData} />
 
-                        {/* Centered Preview rendering the new component */}
-                      {/* Centered Preview rendering the new component */}
-<div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg overflow-x-auto bg-zinc-200 p-4">
-    <div ref={resumeRef} className="bg-white shadow-xl">
-        <ResumePreview data={resumeData} />
-    </div>
-</div>
+                        <div className="mb-10 w-full flex justify-center border-[8px] border-zinc-100 rounded-lg overflow-x-auto bg-zinc-200 p-4">
+                            <div ref={resumeRef} className="bg-white shadow-xl">
+                                <ResumePreview data={resumeData} />
+                            </div>
+                        </div>
 
-                        {/* Final Actions */}
                         <div className="flex flex-wrap justify-center gap-4 w-full border-t border-zinc-200 pt-8">
                             <button onClick={() => setStep(5)} className="text-blue-600 font-bold hover:underline px-6 py-3">Back to Edit</button>
                             
@@ -664,16 +633,15 @@ const ResumeBuilder = () => {
                             </button>
                             
                           <button onClick={handleDownloadPDF} className="bg-zinc-900 text-white px-10 py-3 font-bold rounded shadow-lg hover:bg-black transition-all flex items-center gap-2">
-    <span className="material-symbols-outlined">download</span>
-    Download PDF
-</button>
+                            <span className="material-symbols-outlined">download</span>
+                            Download PDF
+                          </button>
                         </div>
                     </div>
                 )}
 
             </div>
 
-            {/* FIX 3 & 4: RIGHT SECTION: SIDEBAR PREVIEW (Hidden on Step 6) */}
             <div className={`bg-zinc-200 p-12 overflow-y-auto items-start justify-center transition-all duration-500 ${step === 6 ? 'hidden' : 'hidden lg:flex w-[40%]'}`}>
                 <div className="sticky top-0 w-full flex justify-center">
                     <ResumePreview data={resumeData} />
@@ -684,7 +652,6 @@ const ResumeBuilder = () => {
     );
 };
 
-// Reusable Input
 const InputField = ({ label, id, value, onChange, placeholder, disabled }) => (
     <div className="space-y-1">
         {label && <label htmlFor={id} className="text-[10px] font-black text-zinc-500 uppercase">{label}</label>}
@@ -695,7 +662,6 @@ const InputField = ({ label, id, value, onChange, placeholder, disabled }) => (
     </div>
 );
 
-// Reusable Select Sub-component
 const SelectField = ({ label, id, value, onChange, options }) => (
     <div className="space-y-1">
         <label htmlFor={id} className="text-[10px] font-black text-zinc-500 uppercase">{label}</label>
@@ -710,14 +676,9 @@ const SelectField = ({ label, id, value, onChange, options }) => (
     </div>
 );
 
-// FIX 3: Reusable Preview Component
 const ResumePreview = ({ data }) => {
-    // 1. Look at the data.theme string (e.g., 'professional')
-    // 2. Try to find a matching component in our registry.
-    // 3. If it can't find one (or if it's undefined), safely default to 'professional'
     const SelectedTemplate = templates[data?.theme] || templates['professional'];
 
-    // 4. Render whatever template we just picked, and pass the data into it!
     return (
         <div className="w-full flex justify-center transition-all duration-300">
             <SelectedTemplate data={data} />

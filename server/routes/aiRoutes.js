@@ -3,10 +3,12 @@ const router = express.Router();
 const { protect } = require('../middleware/authMiddleware');
 const Groq = require('groq-sdk');
 
+
 // Initialize Groq with your environment variable
 const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 router.post('/enhance', protect, async (req, res) => {
+   
     try {
         const { text, type } = req.body;
 
@@ -43,6 +45,48 @@ router.post('/enhance', protect, async (req, res) => {
         console.error("Groq AI Error:", error);
         res.status(500).json({ message: "Failed to enhance text with AI." });
     }
+    // --- ATS SCORING ROUTE ---
+router.post('/ats-score', protect, async (req, res) => {
+    try {
+        const { resumeText, jobDescription } = req.body;
+
+        if (!resumeText || !jobDescription) {
+            return res.status(400).json({ message: "Both resume text and job description are required." });
+        }
+
+        const systemPrompt = `
+        You are a strict Applicant Tracking System (ATS). Analyze the provided resume against the job description.
+        You MUST respond with ONLY a raw, valid JSON object. Do not include markdown tags like \`\`\`json.
+        
+        The JSON must match this exact structure:
+        {
+            "score": <number between 0-100 based on keyword match and relevance>,
+            "matchingKeywords": [<array of strings found in both>],
+            "missingKeywords": [<array of important strings in job description missing from resume>],
+            "feedback": <A short, actionable 2-sentence tip to improve the match>
+        }`;
+
+        const chatCompletion = await groq.chat.completions.create({
+            messages: [
+                { role: "system", content: systemPrompt },
+                { role: "user", content: `JOB DESCRIPTION:\n${jobDescription}\n\nRESUME:\n${resumeText}` }
+            ],
+            model: "llama-3.1-8b-instant",
+            temperature: 0.2, // Low temperature for more analytical, consistent scoring
+            max_tokens: 500,
+        });
+
+        // Extract the raw text and parse it into a real JSON object
+        const rawResponse = chatCompletion.choices[0]?.message?.content || "{}";
+        const atsData = JSON.parse(rawResponse);
+
+        res.json(atsData);
+
+    } catch (error) {
+        console.error("ATS AI Error:", error);
+        res.status(500).json({ message: "Failed to calculate ATS score." });
+    }
+});
 });
 
 module.exports = router;

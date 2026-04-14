@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, NavLink, useNavigate } from 'react-router-dom'; // 1. Added NavLink
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext'; 
 
 const Navbar = () => {
@@ -38,7 +38,14 @@ const Navbar = () => {
 
                 {/* 2. DYNAMIC NAVIGATION LINKS */}
                 <div className="hidden md:flex gap-8 text-[14px] font-medium items-center">
-                    <NavLink to="/templates" className={activeLinkStyles}>Templates</NavLink>
+                    {/* Changed to an anchor tag to guarantee smooth scrolling to the ID */}
+                    <a 
+                        href="/dashboard#templates" 
+                        className="text-zinc-500 hover:text-zinc-900 relative transition-colors duration-200 py-1"
+                    >
+                        Templates
+                    </a>
+                    
                     <NavLink to="/pricing" className={activeLinkStyles}>Pricing</NavLink>
                     <NavLink to="/dashboard" className={activeLinkStyles}>Dashboard</NavLink>
                 </div>

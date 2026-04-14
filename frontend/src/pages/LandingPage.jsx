@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom'; // 1. Imported useNavigate
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
 import heroVideo from '../assets/ai-background2.mp4';
 
@@ -47,10 +47,11 @@ const ResumePreview = ({ layout, accent }) => (
 
 const TemplateSelector = () => {
   const [selectedId, setSelectedId] = useState(null);
-  const navigate = useNavigate(); // 2. Initialized the navigate hook
+  const navigate = useNavigate(); 
 
+  // ADDED: id="templates" and scroll-mt-14 on the div below
   return (
-    <div className="bg-white py-24 px-6">
+    <div id="templates" className="bg-white py-24 px-6 scroll-mt-14">
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-zinc-900 mb-4 tracking-tight">Choose Your Layout</h2>
@@ -83,7 +84,7 @@ const TemplateSelector = () => {
         <div className="mt-14 flex justify-center">
           <button 
             disabled={!selectedId} 
-            onClick={() => navigate(`/template/${selectedId}`)} // 3. Added the routing click event here
+            onClick={() => navigate(`/template/${selectedId}`)} 
             className={`px-10 py-4 rounded-xl font-bold text-lg transition-all ${selectedId ? 'bg-zinc-900 text-white hover:bg-zinc-800 shadow-xl hover:-translate-y-0.5' : 'bg-zinc-200 text-zinc-400 cursor-not-allowed'}`}
           >
             Continue with Selected Template
@@ -129,8 +130,9 @@ const Pricing = () => {
         }
     ];
   
+    // ADDED: id="pricing" and scroll-mt-14 on the div below
     return (
-        <div className="bg-white font-sans border-t border-zinc-100">
+        <div id="pricing" className="bg-white font-sans border-t border-zinc-100 scroll-mt-14">
             <div className="max-w-7xl mx-auto pt-24 pb-12 px-4 text-center">
                 <h2 className="text-[#009245] font-bold tracking-widest text-sm uppercase mb-3">Pricing</h2>
                 <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-900 tracking-tight mb-4">
@@ -229,7 +231,7 @@ const LandingPage = () => {
   };
 
   return (
-    <>
+    <div className="scroll-smooth">
       {/* 🔥 HERO */}
       <div className="relative w-full h-screen overflow-hidden font-sans">
         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
@@ -313,9 +315,9 @@ const LandingPage = () => {
                 <button className="bg-[#009245] hover:bg-[#007a3a] transition-colors text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg">
                   Start Building for Free
                 </button>
-                <button className="bg-white/10 hover:bg-white/20 backdrop-blur-md transition-colors text-white px-8 py-4 rounded-xl font-bold text-lg border border-white/10">
+                <a href="#templates" className="bg-white/10 hover:bg-white/20 backdrop-blur-md transition-colors text-white px-8 py-4 rounded-xl font-bold text-lg border border-white/10 inline-block text-center">
                   View Templates
-                </button>
+                </a>
               </div>
             </div>
 
@@ -346,9 +348,8 @@ const LandingPage = () => {
       {/* 💰 PRICING SECTION */}
       <Pricing />
 
-    </>
+    </div>
   );
 };
 
 export default LandingPage;
-

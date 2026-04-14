@@ -3,26 +3,23 @@ import React, { createContext, useState, useContext } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // ⚠️ TEMPORARY COLLABORATOR BYPASS: Hardcoded fake user
-    const [user, setUser] = useState({
-        name: "Test User",
-        email: "test@skit.edu",
-        token: "fake-bypass-token"
-    });
-    
-    // Set to false immediately so the app doesn't hang on a loading screen
-    const [loading] = useState(false); 
-
-    // ⚠️ TEMPORARILY DISABLED: Restore this block when you want real logins again!
-    /*
-    useEffect(() => {
-        const userInfo = localStorage.getItem('userInfo');
-        if (userInfo) {
-            setUser(JSON.parse(userInfo));
+    // 1. Lazy Initialization: React runs this once on load.
+    // This fixes the ESLint warning, stops double-renders, and safely parses the JSON!
+    const [user, setUser] = useState(() => {
+        try {
+            const userInfo = localStorage.getItem('userInfo');
+            return userInfo ? JSON.parse(userInfo) : null;
+        } catch (error) {
+            console.error("Corrupted local storage data found. Clearing...", error);
+            localStorage.removeItem('userInfo');
+            return null;
         }
-        setLoading(false);
-    }, []);
-    */
+    });
+
+    // 2. Because we read local storage instantly above, we don't need to 
+    // wait for a useEffect. Loading can just start as false.
+    // eslint-disable-next-line no-unused-vars
+    const [loading, setLoading] = useState(false);
 
     const login = (userData) => {
         localStorage.setItem('userInfo', JSON.stringify(userData));
@@ -31,11 +28,20 @@ export const AuthProvider = ({ children }) => {
 
     const logout = () => {
         localStorage.removeItem('userInfo');
-        setUser(null); // When testing, clicking logout will still clear the fake user for that session
+        setUser(null); 
+    };
+
+    // 3. Package everything up, including the isAuthenticated boolean for your PrivateRoute
+    const value = { 
+        user, 
+        login, 
+        logout, 
+        loading,
+        isAuthenticated: !!user 
     };
 
     return (
-        <AuthContext.Provider value={{ user, login, logout, loading }}>
+        <AuthContext.Provider value={value}>
             {children}
         </AuthContext.Provider>
     );

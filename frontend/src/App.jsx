@@ -15,10 +15,6 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
 
-// 1. Import your new Template file here
-// (Make sure the path matches where you saved template.jsx)
-import Template from './pages/template'; 
-
 function App() {
   return (
     <AuthProvider>
@@ -39,9 +35,8 @@ function App() {
              <Route path="/dashboard" element={<Dashboard />} />
              <Route path="/builder" element={<ResumeBuilder />} />
              
-             {/* 2. Add the dynamic template route here */}
-             {/* The :templateId acts as a variable that changes based on what the user clicks */}
-             <Route path="/template/:templateId" element={<Template />} />
+             {/* FIXED: This now drops the user directly into the Builder with the template loaded */}
+             <Route path="/template/:templateId" element={<ResumeBuilder />} />
              
           </Route>
         </Routes>
