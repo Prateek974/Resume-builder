@@ -15,29 +15,20 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ResumeBuilder from './pages/ResumeBuilder';
 
-<<<<<<< HEAD
-=======
-// 1. Import your dynamic Template workspace
-import Template from './pages/template'; 
-
-// ==========================================
-// LAYOUT COMPONENT
-// Wraps standard pages with the global Navbar & Footer
-// ==========================================
+// 1. WE MUST DEFINE THE MAIN LAYOUT
+// This component automatically wraps any page inside it with the Navbar and Footer
 const MainLayout = () => {
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen flex-grow">
       <Navbar />
-      {/* <Outlet /> is where the specific page content will be injected */}
       <main className="flex-grow">
-        <Outlet /> 
+        <Outlet /> {/* This is where the actual page (like Dashboard or Pricing) gets injected */}
       </main>
       <Footer />
     </div>
   );
 };
 
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
 function App() {
   return (
     <AuthProvider>
@@ -56,31 +47,23 @@ function App() {
             <Route path="/contact" element={<ContactPage />} />
             <Route path="/pricing" element={<Pricing />} />
 
-            {/* Protected Routes (Require Login, but still have standard layout) */}
+            {/* Protected Routes (Requires Login, HAS Navbar & Footer) */}
             <Route element={<PrivateRoute />}>
               <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/builder" element={<ResumeBuilder />} />
             </Route>
 
-<<<<<<< HEAD
-          {/* --- PROTECTED ROUTES --- */}
-          <Route element={<PrivateRoute />}>
-             <Route path="/dashboard" element={<Dashboard />} />
-             <Route path="/builder" element={<ResumeBuilder />} />
-             
-             {/* FIXED: This now drops the user directly into the Builder with the template loaded */}
-             <Route path="/template/:templateId" element={<ResumeBuilder />} />
-             
-=======
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
           </Route>
+
 
           {/* ========================================== */}
           {/* GROUP 2: FULL-SCREEN WORKSPACES            */}
-          {/* No Navbar, No Footer                       */}
+          {/* NO Navbar, NO Footer, Requires Login       */}
           {/* ========================================== */}
           <Route element={<PrivateRoute />}>
-            <Route path="/template/:templateId" element={<Template />} />
+            <Route path="/builder" element={<ResumeBuilder />} />
+            
+            {/* Drops the user directly into the Builder with the specific template loaded */}
+            <Route path="/template/:templateId" element={<ResumeBuilder />} />
           </Route>
 
         </Routes>

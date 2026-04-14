@@ -1,4 +1,3 @@
-// src/pages/LandingPage.jsx
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
@@ -60,19 +59,10 @@ const ResumePreview = ({ layout, accent }) => (
 
 const TemplateSelector = () => {
   const [selectedId, setSelectedId] = useState(null);
-<<<<<<< HEAD
   const navigate = useNavigate(); 
-=======
-  const navigate = useNavigate();
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
 
-  // ADDED: id="templates" and scroll-mt-14 on the div below
   return (
-<<<<<<< HEAD
     <div id="templates" className="bg-white py-24 px-6 scroll-mt-14">
-=======
-    <div className="bg-white py-24 px-6" id="templates">
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-16">
           <h2 className="text-4xl font-extrabold text-zinc-900 mb-4 tracking-tight">Choose Your Layout</h2>
@@ -130,7 +120,6 @@ const TemplateSelector = () => {
 // 3. PRICING COMPONENT
 // ==========================================
 const Pricing = () => {
-<<<<<<< HEAD
     const { user } = useAuth();
   
     const tiers = [
@@ -162,7 +151,6 @@ const Pricing = () => {
         }
     ];
   
-    // ADDED: id="pricing" and scroll-mt-14 on the div below
     return (
         <div id="pricing" className="bg-white font-sans border-t border-zinc-100 scroll-mt-14">
             <div className="max-w-7xl mx-auto pt-24 pb-12 px-4 text-center">
@@ -170,91 +158,44 @@ const Pricing = () => {
                 <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-900 tracking-tight mb-4">
                     Invest in your <span className="text-[#009245]">Career.</span>
                 </h1>
-                <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
+                <p className="text-zinc-500 text-lg max-w-2xl mx-auto mb-16">
                     Choose the plan that fits your career goals. Whether you're a student or a senior engineer, we have the tools to get you hired.
                 </p>
-=======
-  // Safe fallback just in case useAuth is not fully set up yet
-  const auth = useAuth();
-  const user = auth ? auth.user : null;
-
-  const tiers = [
-    {
-      name: "Free",
-      price: "₹0",
-      description: "Perfect for students starting their first internship.",
-      features: ["1 Resume Template", "Basic AI Polish (3/mo)", "Export to PDF", "ATS Keyword Scan"],
-      buttonText: user ? "Current Plan" : "Get Started",
-      highlight: false
-    },
-    {
-      name: "Pro",
-      price: "₹499",
-      period: "/mo",
-      description: "For active job seekers targeting top-tier companies.",
-      features: ["Unlimited Templates", "Unlimited AI Polish", "Cover Letter Builder", "Advanced ATS Analytics", "Custom Brand Colors"],
-      buttonText: "Go Pro",
-      highlight: true
-    },
-    {
-      name: "Elite",
-      price: "₹999",
-      period: "/mo",
-      description: "High-end data insights for senior roles.",
-      features: ["Everything in Pro", "1-on-1 AI Interview Prep", "LinkedIn Profile Optimizer", "Priority Support", "Ghost Mode (Hidden from recruiters)"],
-      buttonText: "Go Elite",
-      highlight: false
-    }
-  ];
-
-  return (
-    <div className="bg-white font-sans border-t border-zinc-100" id="pricing">
-      <div className="max-w-7xl mx-auto pt-24 pb-12 px-4 text-center">
-        <h2 className="text-[#009245] font-bold tracking-widest text-sm uppercase mb-3">Pricing</h2>
-        <h1 className="text-4xl md:text-5xl font-extrabold text-zinc-900 tracking-tight mb-4">
-          Invest in your <span className="text-[#009245]">Career.</span>
-        </h1>
-        <p className="text-zinc-500 text-lg max-w-2xl mx-auto">
-          Choose the plan that fits your career goals. Whether you're a student or a senior engineer, we have the tools to get you hired.
-        </p>
-      </div>
-
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 px-4 pb-20">
-        {tiers.map((tier, index) => (
-          <div key={index} className={`relative p-8 rounded-3xl border ${tier.highlight ? 'border-[#009245] shadow-2xl scale-105 z-10 bg-white' : 'border-zinc-200 bg-white'} flex flex-col transition-all duration-300 hover:shadow-xl`}>
-            {tier.highlight && (
-              <span className="absolute -top-4 left-1/2 -translate-x-1/2 bg-[#009245] text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-widest shadow-md">
-                Most Popular
-              </span>
-            )}
-            <div className="mb-8">
-              <h3 className="text-xl font-bold text-zinc-900 mb-2">{tier.name}</h3>
-              <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-black text-zinc-900">{tier.price}</span>
-                <span className="text-zinc-500 font-medium">{tier.period}</span>
-              </div>
-              <p className="text-zinc-500 text-sm mt-4 leading-relaxed">{tier.description}</p>
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
-            </div>
-            <div className="space-y-4 mb-10 flex-grow">
-              {tier.features.map((feature, i) => (
-                <div key={i} className="flex items-start gap-3">
-                  <span className="text-[#009245] font-bold">✓</span>
-                  <span className="text-sm text-zinc-700 font-medium">{feature}</span>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-left">
+                    {tiers.map((tier, index) => (
+                        <div key={index} className={`flex flex-col bg-white rounded-3xl p-8 border ${tier.highlight ? 'border-[#009245] shadow-2xl relative scale-105' : 'border-zinc-200 shadow-lg'}`}>
+                            {tier.highlight && (
+                                <div className="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-[#009245] text-white text-xs font-bold uppercase tracking-widest py-1 px-4 rounded-full">
+                                    Most Popular
+                                </div>
+                            )}
+                            <h3 className="text-2xl font-black text-zinc-900 mb-2">{tier.name}</h3>
+                            <p className="text-zinc-500 text-sm mb-6 h-10">{tier.description}</p>
+                            <div className="mb-6">
+                                <span className="text-4xl font-black text-zinc-900">{tier.price}</span>
+                                {tier.period && <span className="text-zinc-500 font-medium">{tier.period}</span>}
+                            </div>
+                            <div className="space-y-4 mb-10 flex-grow">
+                                {tier.features.map((feature, i) => (
+                                    <div key={i} className="flex items-start gap-3">
+                                        <span className="text-[#009245] font-bold">✓</span>
+                                        <span className="text-sm text-zinc-700 font-medium">{feature}</span>
+                                    </div>
+                                ))}
+                            </div>
+                            <Link 
+                                to={user ? "/checkout" : "/login"}
+                                className={`w-full py-3.5 rounded-xl font-bold text-center transition-all mt-auto ${tier.highlight ? 'bg-[#009245] text-white hover:bg-[#007a3a] shadow-lg hover:shadow-xl' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'}`}
+                            >
+                                {tier.buttonText}
+                            </Link>
+                        </div>
+                    ))}
                 </div>
-              ))}
             </div>
-            <Link 
-              to={user ? "/checkout" : "/login"}
-              className={`w-full py-3.5 rounded-xl font-bold text-center transition-all ${tier.highlight ? 'bg-[#009245] text-white hover:bg-[#007a3a] shadow-lg hover:shadow-xl' : 'bg-zinc-100 text-zinc-900 hover:bg-zinc-200'}`}
-            >
-              {tier.buttonText}
-            </Link>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
+        </div>
+    );
 };
 
 // ==========================================
@@ -268,17 +209,9 @@ const LandingPage = () => {
   };
 
   return (
-<<<<<<< HEAD
     <div className="scroll-smooth">
       {/* 🔥 HERO */}
       <div className="relative w-full h-screen overflow-hidden font-sans">
-=======
-    <div className="bg-white min-h-screen font-sans">
-      
-      {/* 🔥 HERO SECTION */}
-      <div className="relative w-full h-screen overflow-hidden">
-        {/* Make sure heroVideo path is correct or replace with a static background color/image for testing */}
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src={heroVideo} type="video/mp4" />
         </video>
@@ -321,7 +254,7 @@ const LandingPage = () => {
                 >
                   {faq.question}
                   <span className={`text-[#009245] transition-transform duration-300 ${openIndex === index ? "rotate-180" : ""}`}>
-                    ▼ {/* Replaced SVG with standard character for cleaner code, you can use your SVG here */}
+                    ▼
                   </span>
                 </button>
                 <div className={`transition-all duration-300 ease-in-out bg-zinc-50 ${openIndex === index ? "max-h-40 border-t border-zinc-100" : "max-h-0 overflow-hidden"}`}>
@@ -343,8 +276,7 @@ const LandingPage = () => {
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#009245] rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600 rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none"></div>
 
-<<<<<<< HEAD
-          <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12">
+          <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12 w-full">
             {/* LEFT SIDE */}
             <div className="max-w-xl text-center lg:text-left">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
@@ -362,35 +294,19 @@ const LandingPage = () => {
                   View Templates
                 </a>
               </div>
-=======
-          <div className="max-w-xl text-center lg:text-left relative z-10">
-            <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
-              Your dream job <br className="hidden md:block" /> 
-              is just a <span className="text-[#009245]">click away.</span>
-            </h2>
-            <p className="text-zinc-400 mb-10 text-lg md:text-xl font-medium max-w-lg mx-auto lg:mx-0">
-              Stop struggling with formatting and writer's block. Let our AI handle the heavy lifting while you focus on the interviews.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-              <button 
-                onClick={() => document.getElementById('templates').scrollIntoView({ behavior: 'smooth' })}
-                className="bg-[#009245] hover:bg-[#007a3a] transition-colors text-white px-8 py-4 rounded-xl font-bold text-lg shadow-lg"
-              >
-                Start Building for Free
-              </button>
->>>>>>> 4a2bf5d019fe4bb75c13a0a5d0dd5cfbb5a7628e
             </div>
-          </div>
 
-          <div className="w-full max-w-md bg-white/5 border border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl relative z-10">
-            <p className="mb-6 text-zinc-300 text-lg leading-relaxed">
-              "This AI resume builder is incredible. It completely overhauled my bullet points and I got 3 callbacks in my first week of applying. Worth every second."
-            </p>
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-white font-bold border border-zinc-700">SJ</div>
-              <div>
-                <p className="text-white font-bold">Sarah Jenkins</p>
-                <p className="text-[#009245] text-sm font-semibold">Senior Product Manager</p>
+            {/* RIGHT SIDE (Testimonial) */}
+            <div className="w-full max-w-md bg-white/5 border border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl relative z-10">
+              <p className="mb-6 text-zinc-300 text-lg leading-relaxed">
+                "This AI resume builder is incredible. It completely overhauled my bullet points and I got 3 callbacks in my first week of applying. Worth every second."
+              </p>
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 bg-zinc-800 rounded-full flex items-center justify-center text-white font-bold border border-zinc-700">SJ</div>
+                <div>
+                  <p className="text-white font-bold">Sarah Jenkins</p>
+                  <p className="text-[#009245] text-sm font-semibold">Senior Product Manager</p>
+                </div>
               </div>
             </div>
           </div>
