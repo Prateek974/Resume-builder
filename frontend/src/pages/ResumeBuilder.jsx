@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
 import { useAuth } from '../context/AuthContext';
-import { useParams } from 'react-router-dom'; // <--- NEW: Import useParams
+import { useParams } from 'react-router-dom';
 import * as htmlToImage from 'html-to-image';
 import { jsPDF } from 'jspdf';
 import AtsScorer from '../components/AtsScorer';
@@ -10,8 +10,6 @@ import { templates, availableThemes } from '../components/templates/TemplateRegi
 
 const ResumeBuilder = () => {
     const { user } = useAuth();
-    
-    // --- NEW: Grab the template ID from the URL ---
     const { templateId } = useParams();
 
     const [step, setStep] = useState(1);
@@ -29,9 +27,8 @@ const ResumeBuilder = () => {
         setOptionalFields(prev => ({ ...prev, [field]: !prev[field] }));
     };
 
-    // --- UPDATED: Added theme initialization from URL ---
     const [resumeData, setResumeData] = useState({
-        theme: templateId || 'professional', // Starts with URL template or defaults to professional
+        theme: templateId || 'professional',
         resumeTitle: "My Professional Resume",
         personalInfo: {
             firstName: user?.name?.split(' ')[0] || '',
@@ -54,7 +51,7 @@ const ResumeBuilder = () => {
 
     const resumeRef = useRef(null);
     const [isDownloading, setIsDownloading] = useState(false);
-    
+
     const handleDownloadPDF = async () => {
         const element = resumeRef.current;
         if (!element) return;
@@ -91,7 +88,11 @@ const ResumeBuilder = () => {
                 if (data) {
                     setResumeData(prev => ({
                         ...data,
-                        // Ensure we don't overwrite the URL-selected theme with an old saved theme if starting fresh
+                        // FIX: Ensure arrays are never overwritten with undefined
+                        education: data.education?.length ? data.education : prev.education,
+                        experience: data.experience?.length ? data.experience : prev.experience,
+                        skills: data.skills || prev.skills,
+                        summary: data.summary || prev.summary,
                         theme: templateId || data.theme || 'professional', 
                         personalInfo: {
                             ...data.personalInfo,
@@ -106,7 +107,7 @@ const ResumeBuilder = () => {
             } finally { setFetching(false); }
         };
         fetchResume();
-    }, [user, templateId]); // Added templateId as dependency
+    }, [user, templateId]);
 
     const handleAIEnhance = async (index, currentText, type) => {
         if (!currentText) return alert("Please type some rough notes first!");
@@ -152,17 +153,24 @@ const ResumeBuilder = () => {
     };
 
     const handleArrayChange = (index, field, value, section) => {
-        const newArray = [...resumeData[section]];
-        newArray[index][field] = value;
-        setResumeData(prev => ({ ...prev, [section]: newArray }));
+        // FIX: Ensure we have an array to copy from
+        const currentArray = resumeData[section] || [];
+        const newArray = [...currentArray];
+        if (newArray[index]) {
+            newArray[index][field] = value;
+            setResumeData(prev => ({ ...prev, [section]: newArray }));
+        }
     };
 
     const addField = (section, template) => {
-        setResumeData(prev => ({ ...prev, [section]: [...prev[section], template] }));
+        // FIX: Ensure we are spreading an array
+        const currentArray = resumeData[section] || [];
+        setResumeData(prev => ({ ...prev, [section]: [...currentArray, template] }));
     };
 
     const removeField = (index, section) => {
-        const newArray = [...resumeData[section]];
+        const currentArray = resumeData[section] || [];
+        const newArray = [...currentArray];
         newArray.splice(index, 1);
         setResumeData(prev => ({ ...prev, [section]: newArray }));
     };
@@ -205,21 +213,21 @@ const ResumeBuilder = () => {
 
                         <div className="space-y-5 mb-8">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <InputField label="First Name" id="firstName" value={resumeData.personalInfo.firstName} onChange={handlePersonalChange} />
-                                <InputField label="Surname" id="lastName" value={resumeData.personalInfo.lastName} onChange={handlePersonalChange} />
+                                <InputField label="First Name" id="firstName" value={resumeData.personalInfo?.firstName || ''} onChange={handlePersonalChange} />
+                                <InputField label="Surname" id="lastName" value={resumeData.personalInfo?.lastName || ''} onChange={handlePersonalChange} />
                             </div>
 
-                            <InputField label="Profession" id="profession" value={resumeData.personalInfo.profession} onChange={handlePersonalChange} placeholder="e.g. Data Science Student" />
+                            <InputField label="Profession" id="profession" value={resumeData.personalInfo?.profession || ''} onChange={handlePersonalChange} placeholder="e.g. Data Science Student" />
 
                             <div className="grid grid-cols-3 gap-5">
-                                <InputField label="City" id="city" value={resumeData.personalInfo.city} onChange={handlePersonalChange} placeholder="e.g. Jaipur" />
-                                <InputField label="Country" id="country" value={resumeData.personalInfo.country} onChange={handlePersonalChange} placeholder="e.g. India" />
-                                <InputField label="Pin Code" id="pinCode" value={resumeData.personalInfo.pinCode} onChange={handlePersonalChange} />
+                                <InputField label="City" id="city" value={resumeData.personalInfo?.city || ''} onChange={handlePersonalChange} placeholder="e.g. Jaipur" />
+                                <InputField label="Country" id="country" value={resumeData.personalInfo?.country || ''} onChange={handlePersonalChange} placeholder="e.g. India" />
+                                <InputField label="Pin Code" id="pinCode" value={resumeData.personalInfo?.pinCode || ''} onChange={handlePersonalChange} />
                             </div>
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                <InputField label="Phone" id="phone" value={resumeData.personalInfo.phone} onChange={handlePersonalChange} />
-                                <InputField label="Email *" id="email" value={resumeData.personalInfo.email} onChange={handlePersonalChange} />
+                                <InputField label="Phone" id="phone" value={resumeData.personalInfo?.phone || ''} onChange={handlePersonalChange} />
+                                <InputField label="Email *" id="email" value={resumeData.personalInfo?.email || ''} onChange={handlePersonalChange} />
                             </div>
                         </div>
 
@@ -243,13 +251,13 @@ const ResumeBuilder = () => {
 
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                 {optionalFields.linkedin && (
-                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="LinkedIn URL" id="linkedin" value={resumeData.personalInfo.linkedin} onChange={handlePersonalChange} /></div>
+                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="LinkedIn URL" id="linkedin" value={resumeData.personalInfo?.linkedin || ''} onChange={handlePersonalChange} /></div>
                                 )}
                                 {optionalFields.github && (
-                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="GitHub URL" id="github" value={resumeData.personalInfo.github} onChange={handlePersonalChange} /></div>
+                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="GitHub URL" id="github" value={resumeData.personalInfo?.github || ''} onChange={handlePersonalChange} /></div>
                                 )}
                                 {optionalFields.portfolio && (
-                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="Portfolio Website" id="portfolio" value={resumeData.personalInfo.portfolio} onChange={handlePersonalChange} /></div>
+                                    <div className="animate-in zoom-in-95 duration-200"><InputField label="Portfolio Website" id="portfolio" value={resumeData.personalInfo?.portfolio || ''} onChange={handlePersonalChange} /></div>
                                 )}
                             </div>
                         </div>
@@ -268,9 +276,10 @@ const ResumeBuilder = () => {
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">Tell us about your education</h2>
                         <p className="text-sm text-zinc-500 mb-8">Enter your education experience so far, even if you are a current student or did not graduate.</p>
 
-                        {resumeData.education.map((edu, index) => (
+                        {/* FIX: Safe Fallback for map */}
+                        {(resumeData.education || []).map((edu, index) => (
                             <div key={index} className="mb-8 relative group border-b border-zinc-200 pb-8 last:border-0">
-                                {resumeData.education.length > 1 && (
+                                {(resumeData.education || []).length > 1 && (
                                     <button onClick={() => removeField(index, 'education')} className="absolute top-0 right-0 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold flex items-center gap-1">
                                         <span className="material-symbols-outlined text-[14px]">delete</span> Remove
                                     </button>
@@ -278,23 +287,23 @@ const ResumeBuilder = () => {
 
                                 <div className="space-y-5">
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="School Name *" value={edu.school} onChange={(e) => handleArrayChange(index, 'school', e.target.value, 'education')} placeholder="e.g. Rajasthan Technical University" />
+                                        <InputField label="School Name *" value={edu.school || ''} onChange={(e) => handleArrayChange(index, 'school', e.target.value, 'education')} placeholder="e.g. Rajasthan Technical University" />
                                         <InputField label="School Location" value={edu.location || ''} onChange={(e) => handleArrayChange(index, 'location', e.target.value, 'education')} placeholder="e.g. Kota, India" />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <SelectField 
                                             label="Degree" 
-                                            value={edu.degree} 
+                                            value={edu.degree || ''} 
                                             onChange={(e) => handleArrayChange(index, 'degree', e.target.value, 'education')} 
                                             options={['Select', 'High School Diploma', 'B.Tech', 'B.Sc', 'B.C.A.', 'M.Tech', 'Other']} 
                                         />
-                                        <InputField label="Field of Study" value={edu.fieldOfStudy} onChange={(e) => handleArrayChange(index, 'fieldOfStudy', e.target.value, 'education')} placeholder="e.g. Data Science" />
+                                        <InputField label="Field of Study" value={edu.fieldOfStudy || ''} onChange={(e) => handleArrayChange(index, 'fieldOfStudy', e.target.value, 'education')} placeholder="e.g. Data Science" />
                                     </div>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                                        <InputField label="Graduation Date (or expected)" value={edu.endYear} onChange={(e) => handleArrayChange(index, 'endYear', e.target.value, 'education')} placeholder="e.g. May 2028" />
-                                        <InputField label="CGPA / Score" value={edu.cgpa} onChange={(e) => handleArrayChange(index, 'cgpa', e.target.value, 'education')} placeholder="e.g. 8.5" />
+                                        <InputField label="Graduation Date (or expected)" value={edu.endYear || ''} onChange={(e) => handleArrayChange(index, 'endYear', e.target.value, 'education')} placeholder="e.g. May 2028" />
+                                        <InputField label="CGPA / Score" value={edu.cgpa || ''} onChange={(e) => handleArrayChange(index, 'cgpa', e.target.value, 'education')} placeholder="e.g. 8.5" />
                                     </div>
                                 </div>
                             </div>
@@ -325,9 +334,10 @@ const ResumeBuilder = () => {
                         <h2 className="text-2xl font-black text-zinc-900 mb-2">Tell us about your most recent job</h2>
                         <p className="text-sm text-zinc-500 mb-8">We'll start there and work backward.</p>
 
-                        {resumeData.experience.map((exp, index) => (
+                        {/* FIX: Safe Fallback for map */}
+                        {(resumeData.experience || []).map((exp, index) => (
                             <div key={index} className="mb-8 relative group border-b border-zinc-200 pb-8 last:border-0">
-                                {resumeData.experience.length > 1 && (
+                                {(resumeData.experience || []).length > 1 && (
                                     <button onClick={() => removeField(index, 'experience')} className="absolute top-0 right-0 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity text-xs font-bold flex items-center gap-1">
                                         <span className="material-symbols-outlined text-[14px]">delete</span> Remove
                                     </button>
