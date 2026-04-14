@@ -87,7 +87,7 @@ const ResumeBuilder = () => {
             if (!user?.token) { setFetching(false); return; }
             try {
                 const config = { headers: { Authorization: `Bearer ${user.token}` } };
-                const { data } = await axios.get('http://localhost:5000/api/resumes/me', config);
+                const { data } = await axios.get('https://resume-builder-api-rdkz.onrender.com//api/resumes/me', config);
                 if (data) {
                     setResumeData(prev => ({
                         ...data,
@@ -114,7 +114,7 @@ const ResumeBuilder = () => {
         setIsAILoading(true);
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            const { data } = await axios.post('http://localhost:5000/api/ai/enhance', { text: currentText, type }, config);
+            const { data } = await axios.post('https://resume-builder-api-rdkz.onrender.com//api/ai/enhance', { text: currentText, type }, config);
 
             if (type === 'experience') {
                 handleArrayChange(index, 'summary', data.enhancedText, 'experience');
@@ -171,7 +171,7 @@ const ResumeBuilder = () => {
         setLoading(true);
         try {
             const config = { headers: { Authorization: `Bearer ${user.token}` } };
-            await axios.post('http://localhost:5000/api/resumes/save', resumeData, config);
+            await axios.post('https://resume-builder-api-rdkz.onrender.com//api/resumes/save', resumeData, config);
             alert("Progress Saved!");
         } catch (err) {
             alert("Error saving progress.");

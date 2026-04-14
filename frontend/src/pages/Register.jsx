@@ -23,7 +23,7 @@ const Register = () => {
     e.preventDefault();
     try {
       
-      const response = await axios.post('http://localhost:5000/api/auth/register', {
+      const response = await axios.post('https://resume-builder-api-rdkz.onrender.com//api/auth/register', {
         name: formData.fullName, 
         email: formData.email,
         password: formData.password
