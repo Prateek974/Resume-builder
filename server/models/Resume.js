@@ -11,7 +11,7 @@ const resumeSchema = new mongoose.Schema({
         default: "My Professional Resume" 
     },
     
-    // Step 1: Heading
+ 
     personalInfo: {
         firstName: { type: String, default: '' },
         lastName: { type: String, default: '' },
@@ -26,7 +26,7 @@ const resumeSchema = new mongoose.Schema({
         portfolio: { type: String, default: '' }
     },
 
-    // Step 2: Education
+    
     education: [{
         school: { type: String, default: '' },
         location: { type: String, default: '' },
@@ -36,27 +36,27 @@ const resumeSchema = new mongoose.Schema({
         cgpa: { type: String, default: '' }
     }],
 
-    // Step 3: Work History
+  
     experience: [{
         company: { type: String, default: '' },
         role: { type: String, default: '' },
         location: { type: String, default: '' },
-        isRemote: { type: Boolean, default: false }, // Checkbox
+        isRemote: { type: Boolean, default: false }, 
         startMonth: { type: String, default: '' },
         startYear: { type: String, default: '' },
         endMonth: { type: String, default: '' },
         endYear: { type: String, default: '' },
-        isCurrent: { type: Boolean, default: false }, // Checkbox
+        isCurrent: { type: Boolean, default: false }, 
         summary: { type: String, default: '' }
     }],
 
-    // Step 4: Skills (Zety style string)
+    
     skills: { 
         type: String, 
         default: '' 
     },
 
-    // Step 5: Professional Summary
+
     summary: { 
         type: String, 
         default: '' 

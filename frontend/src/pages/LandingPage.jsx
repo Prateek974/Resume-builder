@@ -1,12 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext'; 
-// Ensure you have a video file at this path, or replace with an image/color if not.
+
 import heroVideo from '../assets/ai-background2.mp4'; 
 
-// ==========================================
-// 1. DATA & MOCKUPS
-// ==========================================
+
 const templates = [
   { id: 'modern-minimal', name: 'Modern Minimalist', description: 'Clean lines and ample whitespace. Perfect for most industries.', accent: 'bg-zinc-300', layout: 'single' },
   { id: 'executive-pro', name: 'Executive Pro', description: 'Traditional two-column layout tailored for senior roles.', accent: 'bg-[#009245]', layout: 'sidebar-left' },
@@ -25,9 +23,7 @@ const faqs = [
   { question: "What makes this resume ATS-friendly?", answer: "Our templates are structurally designed to be parsed easily by Applicant Tracking Systems, ensuring your resume reaches human eyes." }
 ];
 
-// ==========================================
-// 2. TEMPLATE SELECTOR COMPONENTS
-// ==========================================
+
 const ResumePreview = ({ layout, accent }) => (
   <div className="w-full h-48 bg-zinc-900 border-b border-zinc-800 p-3 overflow-hidden flex flex-col gap-2 relative">
     {layout === 'single' && (
@@ -116,9 +112,7 @@ const TemplateSelector = () => {
   );
 };
 
-// ==========================================
-// 3. PRICING COMPONENT
-// ==========================================
+
 const Pricing = () => {
     const { user } = useAuth();
   
@@ -198,9 +192,6 @@ const Pricing = () => {
     );
 };
 
-// ==========================================
-// 4. MAIN LANDING PAGE COMPONENT
-// ==========================================
 const LandingPage = () => {
   const [openIndex, setOpenIndex] = useState(null);
 
@@ -210,7 +201,7 @@ const LandingPage = () => {
 
   return (
     <div className="scroll-smooth">
-      {/* 🔥 HERO */}
+      
       <div className="relative w-full h-screen overflow-hidden font-sans">
         <video autoPlay loop muted playsInline className="absolute inset-0 w-full h-full object-cover">
           <source src={heroVideo} type="video/mp4" />
@@ -235,10 +226,10 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* 📝 TEMPLATE SELECTOR */}
+      
       <TemplateSelector />
 
-      {/* ✅ FAQ SECTION */}
+    
       <div className="bg-zinc-50 py-24 px-6 border-t border-zinc-100">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-16">
@@ -268,16 +259,16 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* 🔥 CTA SECTION */}
+   
       <div className="bg-white py-24 px-6">
         <div className="max-w-6xl mx-auto relative bg-zinc-950 rounded-[2.5rem] p-10 md:p-16 lg:p-20 overflow-hidden shadow-2xl flex flex-col lg:flex-row justify-between items-center gap-12">
           
-          {/* Background Glows */}
+        
           <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#009245] rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none"></div>
           <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-emerald-600 rounded-full mix-blend-screen filter blur-[150px] opacity-20 pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col lg:flex-row justify-between items-center gap-12 w-full">
-            {/* LEFT SIDE */}
+        
             <div className="max-w-xl text-center lg:text-left">
               <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight mb-6 tracking-tight">
                 Your dream job <br className="hidden md:block" /> 
@@ -296,7 +287,7 @@ const LandingPage = () => {
               </div>
             </div>
 
-            {/* RIGHT SIDE (Testimonial) */}
+          
             <div className="w-full max-w-md bg-white/5 border border-white/10 backdrop-blur-xl p-8 rounded-3xl shadow-2xl relative z-10">
               <p className="mb-6 text-zinc-300 text-lg leading-relaxed">
                 "This AI resume builder is incredible. It completely overhauled my bullet points and I got 3 callbacks in my first week of applying. Worth every second."
@@ -313,7 +304,7 @@ const LandingPage = () => {
         </div>
       </div>
 
-      {/* 💰 PRICING SECTION */}
+   
       <Pricing />
 
     </div>

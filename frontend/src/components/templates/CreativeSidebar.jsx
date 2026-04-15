@@ -4,7 +4,7 @@ const CreativeSidebar = ({ data }) => {
     return (
         <div className="w-full max-w-[650px] aspect-[1/1.414] bg-white shadow-2xl flex text-left font-sans overflow-hidden">
             
-            {/* Left Column (Dark) */}
+          
             <div className="w-[35%] bg-zinc-900 text-zinc-300 p-6 flex flex-col">
                 <h1 className="text-3xl font-bold text-white leading-none mb-1 break-words">
                     {data.personalInfo.firstName} <br />
@@ -14,7 +14,7 @@ const CreativeSidebar = ({ data }) => {
                     {data.personalInfo.profession}
                 </p>
 
-                {/* Contact */}
+                
                 <div className="mb-8 space-y-2 text-[10px]">
                     <h2 className="text-[11px] text-white font-bold uppercase tracking-wider mb-3 border-b border-zinc-700 pb-1">Contact</h2>
                     {data.personalInfo.email && <p className="break-all">{data.personalInfo.email}</p>}
@@ -23,7 +23,7 @@ const CreativeSidebar = ({ data }) => {
                     {data.personalInfo.linkedin && <p className="truncate">{data.personalInfo.linkedin}</p>}
                 </div>
 
-                {/* Education */}
+               
                 {data.education?.[0]?.school && (
                     <div className="mb-8">
                         <h2 className="text-[11px] text-white font-bold uppercase tracking-wider mb-3 border-b border-zinc-700 pb-1">Education</h2>
@@ -37,7 +37,7 @@ const CreativeSidebar = ({ data }) => {
                     </div>
                 )}
 
-                {/* Skills */}
+              
                 {data.skills && (
                     <div>
                         <h2 className="text-[11px] text-white font-bold uppercase tracking-wider mb-3 border-b border-zinc-700 pb-1">Skills</h2>
@@ -46,10 +46,10 @@ const CreativeSidebar = ({ data }) => {
                 )}
             </div>
 
-            {/* Right Column (Light) */}
+           
             <div className="w-[65%] p-8 bg-white text-zinc-800 flex flex-col">
                 
-                {/* Summary */}
+               
                 {data.summary && (
                     <section className="mb-6">
                         <h2 className="text-[14px] font-black uppercase tracking-widest text-zinc-900 mb-2">Profile</h2>
@@ -57,7 +57,7 @@ const CreativeSidebar = ({ data }) => {
                     </section>
                 )}
 
-                {/* Experience with Timeline UI */}
+            
                 {data.experience?.[0]?.company && (
                     <section>
                         <h2 className="text-[14px] font-black uppercase tracking-widest text-zinc-900 mb-4">Experience</h2>

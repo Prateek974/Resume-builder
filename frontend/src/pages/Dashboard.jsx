@@ -8,11 +8,11 @@ import { availableThemes } from '../components/templates/TemplateRegistry';
 const Dashboard = () => {
     const { user } = useAuth();
     
-    // State to hold the user's actual saved resume from the database
+    
     const [savedResume, setSavedResume] = useState(null);
     const [loadingResume, setLoadingResume] = useState(true);
 
-    // Fetch the resume when the dashboard loads
+   
     useEffect(() => {
         const fetchSavedResume = async () => {
             if (!user?.token) {
@@ -20,7 +20,7 @@ const Dashboard = () => {
                 return;
             }
 
-            // STEP 1: Clear old data immediately so Account A doesn't see Account B's work
+           
             setSavedResume(null);
             setLoadingResume(true);
 
@@ -32,11 +32,11 @@ const Dashboard = () => {
 
                 const actualResumeData = Array.isArray(data) ? data[0] : data;
 
-                // STEP 2: Explicitly check for data. If missing, keep state as null.
+          
                 if (actualResumeData && actualResumeData.personalInfo) {
                     setSavedResume(actualResumeData);
                 } else {
-                    setSavedResume(null); // No resume found for THIS user
+                    setSavedResume(null); 
                 }
             } catch (err) {
                 console.error("Dashboard fetch error:", err);
@@ -53,7 +53,7 @@ const Dashboard = () => {
         <div className="min-h-screen bg-[#fcfcfc] font-sans pt-8 px-4 md:px-8 scroll-smooth">
             <div className="max-w-6xl mx-auto">
                 
-                {/* 1. WELCOME HEADER */}
+              
                 <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-10 border-b border-zinc-200 pb-8">
                     <div>
                         <h1 className="text-3xl font-black text-zinc-900 tracking-tight">
@@ -70,7 +70,7 @@ const Dashboard = () => {
                     </Link>
                 </div>
 
-                {/* 2. DYNAMIC RECENT DOCUMENTS SECTION */}
+          
                 <div className="mb-16">
                     <h3 className="text-lg font-bold text-zinc-900 mb-5 flex items-center gap-2">
                         <span className="material-symbols-outlined text-zinc-400">history</span>
@@ -79,12 +79,12 @@ const Dashboard = () => {
                     
                     <div className="space-y-4">
                         {loadingResume ? (
-                            // Loading State
+                            
                             <div className="border-2 border-dashed border-zinc-200 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-[#009245]"></div>
                             </div>
                         ) : savedResume ? (
-                            // Render Actual Saved Resume
+                            
                             <div className="group bg-white border border-zinc-200 p-5 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between hover:border-[#009245] transition-all shadow-sm gap-4">
                                 <div className="flex items-center gap-4">
                                     <div className="w-12 h-14 bg-green-50 border border-green-100 rounded flex items-center justify-center text-[#009245] shrink-0">
@@ -110,7 +110,7 @@ const Dashboard = () => {
                                 </div>
                             </div>
                         ) : (
-                            // Empty State (No Resume Found)
+                           
                             <div className="border-2 border-dashed border-zinc-200 bg-zinc-50 rounded-2xl p-12 flex flex-col items-center justify-center text-center">
                                 <span className="material-symbols-outlined text-5xl text-zinc-300 mb-3">post_add</span>
                                 <h4 className="text-zinc-600 font-bold text-base">No resumes found</h4>
@@ -123,7 +123,7 @@ const Dashboard = () => {
                     </div>
                 </div>
 
-                {/* 3. TEMPLATE SHOWCASE SECTION */}
+            
                 <div id="templates" className="scroll-mt-24 pb-20">
                     <div className="border-t border-zinc-200 pt-12 mb-8 flex justify-between items-end">
                         <div>

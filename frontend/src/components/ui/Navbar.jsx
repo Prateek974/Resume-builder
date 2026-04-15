@@ -13,7 +13,7 @@ const Navbar = () => {
         navigate('/login');
     };
 
-    // Helper to keep the code clean
+  
     const activeLinkStyles = ({ isActive }) => 
         `relative transition-colors duration-200 py-1 ${
             isActive 
@@ -25,7 +25,7 @@ const Navbar = () => {
         <nav className="bg-white/80 backdrop-blur-md border-b border-zinc-200 sticky top-0 z-50 w-full font-sans">
             <div className="max-w-7xl mx-auto h-14 flex justify-between items-center px-4">
                 
-                {/* Logo */}
+              
                 <Link to="/" className="flex items-center gap-1.5 group cursor-pointer">
                     <div className="relative flex items-center justify-center">
                         <span className="material-symbols-outlined text-zinc-900 text-2xl">description</span>
@@ -36,9 +36,9 @@ const Navbar = () => {
                     </h1>
                 </Link>
 
-                {/* 2. DYNAMIC NAVIGATION LINKS */}
+               
                 <div className="hidden md:flex gap-8 text-[14px] font-medium items-center">
-                    {/* Changed to an anchor tag to guarantee smooth scrolling to the ID */}
+                
                     <a 
                         href="/dashboard#templates" 
                         className="text-zinc-500 hover:text-zinc-900 relative transition-colors duration-200 py-1"
@@ -50,7 +50,7 @@ const Navbar = () => {
                     <NavLink to="/dashboard" className={activeLinkStyles}>Dashboard</NavLink>
                 </div>
 
-                {/* User Menu / Auth Buttons */}
+               
                 <div className="flex items-center gap-2">
                     {user ? (
                         <div className="relative">

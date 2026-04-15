@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom'; 
 import axios from 'axios'; 
 import { useAuth } from '../context/AuthContext';
-import { GoogleLogin } from '@react-oauth/google'; // Import GoogleLogin
+import { GoogleLogin } from '@react-oauth/google'; 
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -34,15 +34,15 @@ const Login = () => {
     }
   };
 
-  // --- Google Login Success ---
+ 
   const handleGoogleSuccess = async (credentialResponse) => {
     try {
-      // Send the credential (ID Token) to your backend
+      
       const { data } = await axios.post('https://resume-builder-api-rdkz.onrender.com/api/auth/google', {
         token: credentialResponse.credential
       });
 
-      // Log the user in with the token returned by your own backend
+      
       login(data);
       navigate('/dashboard');
     } catch (error) {

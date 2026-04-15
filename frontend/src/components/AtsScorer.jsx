@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useAuth } from '../context/AuthContext'; // Ensure this path matches your setup
+import { useAuth } from '../context/AuthContext'; 
 
 const AtsScorer = ({ resumeData }) => {
     const { user } = useAuth();
@@ -12,7 +12,7 @@ const AtsScorer = ({ resumeData }) => {
         
         setLoading(true);
         try {
-            // Turn the user's resume data object into a single string of text for the AI
+          
             const flatResumeText = `
                 ${resumeData.personalInfo.profession} 
                 ${resumeData.summary} 
@@ -20,12 +20,12 @@ const AtsScorer = ({ resumeData }) => {
                 ${resumeData.skills}
             `;
 
-            // Make the call to your new backend route
+       
             const response = await fetch('https://resume-builder-api-rdkz.onrender.com/api/ai/ats-score', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    Authorization: `Bearer ${user.token}` // Assuming you pass tokens this way
+                    Authorization: `Bearer ${user.token}` 
                 },
                 body: JSON.stringify({
                     resumeText: flatResumeText,
@@ -73,13 +73,12 @@ const AtsScorer = ({ resumeData }) => {
                 )}
             </button>
 
-            {/* RESULTS UI */}
             {result && (
                 <div className="mt-8 animate-in slide-in-from-bottom-4 duration-500 border-t border-zinc-100 pt-6">
                     <div className="flex items-center gap-6 mb-6">
-                        {/* Score Circle */}
+                     
                         <div className="relative flex items-center justify-center w-24 h-24 rounded-full border-4 border-zinc-100">
-                            {/* Simple inline style to create a progress ring */}
+                            
                             <svg className="absolute inset-0 w-full h-full transform -rotate-90">
                                 <circle cx="44" cy="44" r="44" className={`stroke-current ${result.score > 75 ? 'text-[#009245]' : result.score > 50 ? 'text-yellow-500' : 'text-red-500'}`} strokeWidth="8" fill="transparent" strokeDasharray="276" strokeDashoffset={276 - (276 * result.score) / 100} style={{ transition: "stroke-dashoffset 1s ease-in-out", strokeLinecap: "round" }} />
                             </svg>
@@ -94,7 +93,7 @@ const AtsScorer = ({ resumeData }) => {
                     </div>
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-                        {/* Missing Keywords */}
+                       
                         <div className="bg-red-50/50 p-4 rounded-xl border border-red-100">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-red-800 mb-3 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-[16px]">cancel</span> Missing Keywords
@@ -106,7 +105,7 @@ const AtsScorer = ({ resumeData }) => {
                             </div>
                         </div>
 
-                        {/* Matching Keywords */}
+                   
                         <div className="bg-green-50/50 p-4 rounded-xl border border-green-100">
                             <h4 className="text-xs font-bold uppercase tracking-wider text-[#009245] mb-3 flex items-center gap-1">
                                 <span className="material-symbols-outlined text-[16px]">check_circle</span> Matched Keywords

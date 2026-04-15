@@ -3,8 +3,7 @@ import React, { createContext, useState, useContext } from 'react';
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-    // 1. Lazy Initialization: React runs this once on load.
-    // This fixes the ESLint warning, stops double-renders, and safely parses the JSON!
+  
     const [user, setUser] = useState(() => {
         try {
             const userInfo = localStorage.getItem('userInfo');
@@ -16,8 +15,7 @@ export const AuthProvider = ({ children }) => {
         }
     });
 
-    // 2. Because we read local storage instantly above, we don't need to 
-    // wait for a useEffect. Loading can just start as false.
+   
     // eslint-disable-next-line no-unused-vars
     const [loading, setLoading] = useState(false);
 
@@ -31,7 +29,7 @@ export const AuthProvider = ({ children }) => {
         setUser(null); 
     };
 
-    // 3. Package everything up, including the isAuthenticated boolean for your PrivateRoute
+   
     const value = { 
         user, 
         login, 

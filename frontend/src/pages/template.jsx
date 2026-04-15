@@ -3,18 +3,18 @@ import React from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 
 const Template = () => {
-  // 1. Grab the dynamic ID from the URL (e.g., 'modern-minimal' or 'startup-agile')
+  
   const { templateId } = useParams(); 
   const navigate = useNavigate();
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col font-sans">
       
-      {/* Top Navigation Bar */}
+     
       <header className="bg-white border-b border-zinc-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button 
-            onClick={() => navigate('/')} // Sends them back to the landing page
+            onClick={() => navigate('/')} 
             className="text-zinc-500 hover:text-zinc-900 font-medium transition-colors flex items-center gap-2"
           >
             <span>←</span> Back to Templates
@@ -28,10 +28,10 @@ const Template = () => {
         </button>
       </header>
 
-      {/* Main Content Area */}
+      
       <main className="flex-1 max-w-7xl w-full mx-auto p-6 flex gap-8">
         
-        {/* Left Side: Placeholder for the form inputs */}
+       
         <div className="w-1/3 bg-white p-6 rounded-2xl shadow-sm border border-zinc-200 h-[calc(100vh-120px)] overflow-y-auto">
           <h2 className="text-lg font-bold text-zinc-900 mb-6">Edit Information</h2>
           <p className="text-sm text-zinc-500 mb-4">You are currently editing the <strong>{templateId}</strong> layout.</p>
@@ -44,13 +44,13 @@ const Template = () => {
           </div>
         </div>
 
-        {/* Right Side: The actual Template Preview */}
+        
         <div className="w-2/3 flex justify-center overflow-y-auto pb-20">
           
-          {/* A4 Paper Mockup Container */}
+          
           <div className="bg-white w-[210mm] min-h-[297mm] shadow-2xl p-12 relative transition-all duration-300">
             
-            {/* Logic to render different designs based on the URL */}
+            
             {templateId === 'modern-minimal' && (
               <div className="text-center">
                 <h1 className="text-4xl font-light tracking-widest text-zinc-900 uppercase">Modern Minimal</h1>
@@ -68,7 +68,7 @@ const Template = () => {
               </div>
             )}
 
-            {/* Fallback if no specific design is built yet */}
+            
             {templateId !== 'modern-minimal' && templateId !== 'executive-pro' && (
                <div className="flex items-center justify-center h-full text-zinc-400 border-2 border-dashed border-zinc-200 rounded-xl m-12 py-32">
                  <p className="text-lg">Design layout for <strong>{templateId}</strong> will appear here.</p>
